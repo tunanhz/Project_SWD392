@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { Link, useRouter } from "@/navigation";
 import Button from "@/components/ui/Button";
+import { useTranslations } from "next-intl";
 
 export default function RegisterPage() {
+  const t = useTranslations("Auth.register");
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -52,8 +54,8 @@ export default function RegisterPage() {
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-accent/5 via-background to-background">
       <div className="w-full max-w-md p-8 space-y-8 glass rounded-2xl border border-border/50 shadow-2xl">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-primary">Create an Account</h1>
-          <p className="text-sm text-gray-500">Join the exclusive world of premium real estate</p>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">{t('title')}</h1>
+          <p className="text-sm text-gray-500">{t('subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -65,7 +67,7 @@ export default function RegisterPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="name">Full Name</label>
+              <label className="text-sm font-medium" htmlFor="name">{t('fullName')}</label>
               <input
                 id="name"
                 type="text"
@@ -77,7 +79,7 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium" htmlFor="username">Username</label>
+              <label className="text-sm font-medium" htmlFor="username">{t('username')}</label>
               <input
                 id="username"
                 type="text"
@@ -91,7 +93,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="email">Email Address</label>
+            <label className="text-sm font-medium" htmlFor="email">{t('email')}</label>
             <input
               id="email"
               type="email"
@@ -104,7 +106,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="password">Password</label>
+            <label className="text-sm font-medium" htmlFor="password">{t('password')}</label>
             <input
               id="password"
               type="password"
@@ -117,33 +119,33 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-2 pb-4">
-            <label className="text-sm font-medium">Join as</label>
+            <label className="text-sm font-medium">{t('joinAs')}</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, role: 'CUSTOMER' })}
                 className={`py-2 text-xs font-semibold rounded-lg border transition-all ${formData.role === 'CUSTOMER' ? 'bg-accent text-accent-foreground border-accent' : 'bg-transparent text-gray-500 border-border hover:bg-accent/5'}`}
               >
-                Bidder
+                {t('bidder')}
               </button>
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, role: 'OWNER' })}
                 className={`py-2 text-xs font-semibold rounded-lg border transition-all ${formData.role === 'OWNER' ? 'bg-accent text-accent-foreground border-accent' : 'bg-transparent text-gray-500 border-border hover:bg-accent/5'}`}
               >
-                Owner
+                {t('owner')}
               </button>
             </div>
           </div>
 
           <Button type="submit" variant="accent" className="w-full h-12 text-lg" disabled={loading}>
-            {loading ? "Creating..." : "Create Account"}
+            {loading ? t('loading') : t('submit')}
           </Button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-500">Already have an account? </span>
-          <Link href="/login" className="text-accent font-medium hover:underline">Sign in</Link>
+          <span className="text-gray-500">{t('hasAccount')} </span>
+          <Link href="/login" className="text-accent font-medium hover:underline">{t('signIn')}</Link>
         </div>
       </div>
     </div>

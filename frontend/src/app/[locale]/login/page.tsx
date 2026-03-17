@@ -4,8 +4,10 @@ import { useState } from "react";
 import { Link, useRouter } from "@/navigation";
 import { useSearchParams } from "next/navigation";
 import Button from "@/components/ui/Button";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth.login");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -37,6 +39,9 @@ export default function LoginPage() {
       // Store token
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      
+      // Notify other components (like Navbar) in the same tab
+      window.dispatchEvent(new Event("auth-change"));
 
       router.push("/dashboard");
     } catch (err: any) {
@@ -50,8 +55,8 @@ export default function LoginPage() {
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-12 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-accent/5 via-background to-background">
       <div className="w-full max-w-md p-8 space-y-8 glass rounded-2xl border border-border/50 shadow-2xl">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-primary">Welcome Back</h1>
-          <p className="text-sm text-gray-500">Enter your credentials to access your account</p>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">{t('title')}</h1>
+          <p className="text-sm text-gray-500">{t('subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -67,7 +72,7 @@ export default function LoginPage() {
           )}
           <div className="space-y-2">
             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="email">
-              Email Address
+              {t('emailLabel')}
             </label>
             <input
               id="email"
@@ -83,9 +88,9 @@ export default function LoginPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="password">
-                Password
+                {t('passwordLabel')}
               </label>
-              <Link href="#" className="text-xs text-accent hover:underline">Forgot password?</Link>
+              <Link href="#" className="text-xs text-accent hover:underline">{t('forgotPassword')}</Link>
             </div>
             <input
               id="password"
@@ -99,13 +104,13 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" variant="accent" className="w-full h-12 text-lg" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? t('loading') : t('submit')}
           </Button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-500">Don't have an account? </span>
-          <Link href="/register" className="text-accent font-medium hover:underline">Create account</Link>
+          <span className="text-gray-500">{t('noAccount')} </span>
+          <Link href="/register" className="text-accent font-medium hover:underline">{t('createAccount')}</Link>
         </div>
       </div>
     </div>

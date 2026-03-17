@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link, useRouter, usePathname } from "@/navigation";
+import Link from 'next/link';
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Button from './ui/Button';
 
@@ -13,33 +14,45 @@ const Navbar = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
-    // Listen for storage changes (for same-tab updates if needed, though usually router.push handles it)
-    const handleStorageChange = () => {
-      const updatedUser = localStorage.getItem("user");
-      if (updatedUser) setUser(JSON.parse(updatedUser));
-      else setUser(null);
+    const checkUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    checkUser();
+
+    const handleAuthChange = () => checkUser();
+    
+    window.addEventListener("storage", handleAuthChange);
+    window.addEventListener("auth-change", handleAuthChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleAuthChange);
+      window.removeEventListener("auth-change", handleAuthChange);
+    };
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
-    router.push("/");
+    window.dispatchEvent(new Event("auth-change"));
+    router.push(`/${locale}`);
   };
 
-  const toggleLocale = () => {
+  const getSwitchLocalePath = () => {
     const nextLocale = locale === 'en' ? 'vi' : 'en';
-    router.replace(pathname, { locale: nextLocale });
+    // Pathname looks like /en/dashboard or /vi/auctions
+    // We want to replace the first segment
+    const segments = pathname.split('/');
+    segments[1] = nextLocale;
+    return segments.join('/');
   };
+
   return (
     <nav className="fixed top-0 w-full z-50 glass border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,18 +64,18 @@ const Navbar = () => {
             <span className="text-xl font-bold tracking-tight text-primary">AuctionProp</span>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-sm font-medium hover:text-accent transition-colors">{t('home')}</Link>
-            <Link href="/auctions" className="text-sm font-medium hover:text-accent transition-colors">{t('auctions')}</Link>
-            <Link href="/dashboard" className="text-sm font-medium hover:text-accent transition-colors">{t('dashboard')}</Link>
+            <Link href={`/${locale}`} className="text-sm font-medium hover:text-accent transition-colors">{t('home')}</Link>
+            <Link href={`/${locale}/auctions`} className="text-sm font-medium hover:text-accent transition-colors">{t('auctions')}</Link>
+            <Link href={`/${locale}/dashboard`} className="text-sm font-medium hover:text-accent transition-colors">{t('dashboard')}</Link>
           </div>
           <div className="flex items-center space-x-4">
             {/* Language Switcher */}
-            <button 
-              onClick={toggleLocale}
+            <Link 
+              href={getSwitchLocalePath()}
               className="px-2 py-1 text-xs font-bold border border-border/50 rounded-lg hover:bg-accent/5 transition-colors uppercase"
             >
               {locale === 'en' ? 'VI' : 'EN'}
-            </button>
+            </Link>
             {user ? (
               <div className="flex items-center gap-4">
                 <div className="flex flex-col items-end">
@@ -76,7 +89,7 @@ const Navbar = () => {
                   
                   {/* Tooltip/Dropdown simulation */}
                   <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border/50 rounded-2xl shadow-2xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform translate-y-2 group-hover:translate-y-0 z-50">
-                    <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/5 rounded-xl transition-colors">
+                    <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-accent/5 rounded-xl transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -96,10 +109,10 @@ const Navbar = () => {
               </div>
             ) : (
               <>
-                <Link href="/login">
+                <Link href={`/${locale}/login`}>
                   <Button variant="ghost" size="sm">{t('login')}</Button>
                 </Link>
-                <Link href="/register">
+                <Link href={`/${locale}/register`}>
                   <Button variant="accent" size="sm">{t('joinNow')}</Button>
                 </Link>
               </>

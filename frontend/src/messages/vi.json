@@ -29,5 +29,33 @@
     "allLocations": "Tất cả khu vực",
     "sortBy": "Sắp xếp theo",
     "latest": "Mới nhất"
+  },
+  "Auth": {
+    "login": {
+      "title": "Chào mừng trở lại",
+      "subtitle": "Nhập thông tin xác thực để truy cập tài khoản",
+      "emailLabel": "Địa chỉ Email",
+      "passwordLabel": "Mật khẩu",
+      "forgotPassword": "Quên mật khẩu?",
+      "submit": "Đăng nhập",
+      "loading": "Đang đăng nhập...",
+      "noAccount": "Chưa có tài khoản?",
+      "createAccount": "Tạo tài khoản"
+    },
+    "register": {
+      "title": "Tạo tài khoản mới",
+      "subtitle": "Tham gia vào thế giới bất động sản cao cấp",
+      "fullName": "Họ và tên",
+      "username": "Tên đăng nhập",
+      "email": "Địa chỉ Email",
+      "password": "Mật khẩu",
+      "joinAs": "Tham gia với tư cách",
+      "bidder": "Người đấu giá",
+      "owner": "Chủ sở hữu",
+      "submit": "Tạo tài khoản",
+      "loading": "Đang tạo...",
+      "hasAccount": "Đã có tài khoản?",
+      "signIn": "Đăng nhập"
+    }
   }
 }

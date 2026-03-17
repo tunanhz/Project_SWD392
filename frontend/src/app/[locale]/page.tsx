@@ -1,7 +1,7 @@
 "use client";
 import Button from "@/components/ui/Button";
 import { Link } from "@/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export default function Home() {
   const t = useTranslations("Landing");
@@ -12,7 +12,7 @@ export default function Home() {
       
       <div className="container px-4 mx-auto text-center space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-1000">
         <div className="inline-block px-4 py-1.5 mb-4 text-xs font-semibold tracking-wider text-accent uppercase bg-accent/10 rounded-full border border-accent/20">
-          The Future of Real Estate Bidding
+          Locale: {useLocale()} | {t('heroTitle') ? 'Translations Loaded' : 'Translations MISSING'}
         </div>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-primary max-w-4xl mx-auto leading-tight">
           {t('heroTitle')}

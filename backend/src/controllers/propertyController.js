@@ -2,12 +2,16 @@ const { Property, User } = require('../models');
 
 const postProperty = async (req, res) => {
   try {
-    const { title, description, address, startingPrice } = req.body;
+    const { title, description, address, startingPrice, area, beds, baths, propertyType } = req.body;
     const property = await Property.create({
       title,
       description,
       address,
       startingPrice,
+      area,
+      beds,
+      baths,
+      propertyType,
       ownerId: req.user.userId,
       status: 'PENDING'
     });
@@ -19,7 +23,14 @@ const postProperty = async (req, res) => {
 
 const getProperties = async (req, res) => {
   try {
-    const properties = await Property.findAll({ include: [{ model: User, as: 'owner', attributes: ['username'] }] });
+    const { Auction, User, PropertyImage } = require('../models');
+    const properties = await Property.findAll({ 
+      include: [
+        { model: User, as: 'owner', attributes: ['username'] },
+        { model: Auction, as: 'auction' },
+        { model: PropertyImage, as: 'images' }
+      ] 
+    });
     res.json(properties);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,4 +52,22 @@ const approveProperty = async (req, res) => {
   }
 };
 
-module.exports = { postProperty, getProperties, approveProperty };
+const getPropertyById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { Auction, User, PropertyImage } = require('../models');
+    const property = await Property.findByPk(id, {
+      include: [
+        { model: User, as: 'owner', attributes: ['username'] },
+        { model: Auction, as: 'auction' },
+        { model: PropertyImage, as: 'images' }
+      ]
+    });
+    if (!property) return res.status(404).json({ message: 'Property not found' });
+    res.json(property);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { postProperty, getProperties, approveProperty, getPropertyById };

@@ -23,6 +23,18 @@ const Property = sequelize.define('Property', {
     type: DataTypes.FLOAT,
     allowNull: true
   },
+  beds: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  baths: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  propertyType: {
+    type: DataTypes.STRING,
+    defaultValue: 'House'
+  },
   startingPrice: {
     type: DataTypes.DECIMAL(15, 2),
     allowNull: false

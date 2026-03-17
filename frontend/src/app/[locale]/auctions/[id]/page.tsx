@@ -8,12 +8,28 @@ import { socket } from "@/lib/socket";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
-  const property = MOCK_PROPERTIES.find((p) => p.id === id);
+  const [property, setProperty] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [bidAmount, setBidAmount] = useState("");
   const [bids, setBids] = useState<{ amount: string; bidTime: string; message: string }[]>([]);
 
   useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/properties/${id}`);
+        if (!response.ok) throw new Error("Property not found");
+        const data = await response.json();
+        setProperty(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
+      fetchProperty();
       socket.connect();
       socket.emit("joinAuction", id);
 
@@ -31,8 +47,9 @@ export default function PropertyDetailsPage() {
   const handleBid = () => {
     if (!bidAmount || !id) return;
     
-    // Simulate current user ID for now
-    const userId = "mock-user-id"; 
+    // Get real user ID from local storage
+    const storedUser = localStorage.getItem("user");
+    const userId = storedUser ? JSON.parse(storedUser).id : "anonymous";
     
     socket.emit("placeBid", {
       auctionId: id,
@@ -42,7 +59,24 @@ export default function PropertyDetailsPage() {
     setBidAmount("");
   };
 
-  if (!property) return <div className="p-20 text-center">Property not found</div>;
+  if (loading) return (
+    <div className="container px-4 mx-auto py-24 space-y-12 animate-pulse">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-2 space-y-8">
+                <div className="aspect-video bg-accent/5 rounded-3xl"></div>
+                <div className="h-10 bg-accent/5 rounded-xl w-1/2"></div>
+                <div className="h-32 bg-accent/5 rounded-3xl"></div>
+            </div>
+            <div className="h-96 bg-accent/5 rounded-3xl"></div>
+        </div>
+    </div>
+  );
+
+  if (error || !property) return (
+    <div className="p-20 text-center glass m-10 rounded-3xl border border-red-100">
+        <p className="text-red-500 font-bold">Error: {error || "Property not found"}</p>
+    </div>
+  );
 
   return (
     <div className="container px-4 mx-auto py-12 space-y-12 animate-in fade-in duration-700">
@@ -50,7 +84,11 @@ export default function PropertyDetailsPage() {
         {/* Left Column: Images & Details */}
         <div className="lg:col-span-2 space-y-8">
           <div className="aspect-video rounded-3xl overflow-hidden border border-border/50 shadow-2xl">
-            <img src={property.image} alt={property.title} className="w-full h-full object-cover" />
+            <img 
+              src={property.images?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop"} 
+              alt={property.title} 
+              className="w-full h-full object-cover" 
+            />
           </div>
           
           <div className="space-y-6">
@@ -62,12 +100,12 @@ export default function PropertyDetailsPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  {property.location}
+                  {property.address}
                 </p>
               </div>
               <div className="text-right">
                 <span className="bg-accent/10 text-accent px-4 py-1.5 rounded-full text-sm font-bold border border-accent/20">
-                  {property.status}
+                  {property.auction?.status || property.status}
                 </span>
               </div>
             </div>
@@ -75,22 +113,22 @@ export default function PropertyDetailsPage() {
             <div className="grid grid-cols-3 gap-4 border-y border-border/50 py-6">
               <div className="text-center">
                 <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">Bedrooms</p>
-                <p className="text-2xl font-bold text-primary">{property.beds}</p>
+                <p className="text-2xl font-bold text-primary">{property.beds || 0}</p>
               </div>
               <div className="text-center border-x border-border/50">
                 <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">Bathrooms</p>
-                <p className="text-2xl font-bold text-primary">{property.baths}</p>
+                <p className="text-2xl font-bold text-primary">{property.baths || 0}</p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">Total Area</p>
-                <p className="text-2xl font-bold text-primary">{property.size}</p>
+                <p className="text-2xl font-bold text-primary">{property.area || 0} m²</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-primary">Property Description</h2>
               <p className="text-gray-600 leading-relaxed text-lg">
-                Exclusive luxury residence featuring state-of-the-art amenities and breathtaking views. This property has been meticulously maintained and offers the perfect blend of modern design and classic elegance. All legal documents are verified (BR-15 compliant).
+                {property.description || "No description provided for this property. Exclusive luxury residence featuring state-of-the-art amenities and breathtaking views."}
               </p>
             </div>
           </div>
@@ -101,14 +139,18 @@ export default function PropertyDetailsPage() {
           <div className="glass rounded-3xl p-8 border border-border/50 shadow-2xl sticky top-24 space-y-6">
             <div className="space-y-2 text-center pb-4 border-b border-border/50">
               <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">Reserve Price</p>
-              <p className="text-4xl font-black text-primary">{property.price}</p>
+              <p className="text-4xl font-black text-primary">
+                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(property.startingPrice))}
+              </p>
             </div>
 
             <div className="space-y-4">
               <div className="flex justify-between items-center bg-accent/5 p-4 rounded-xl border border-accent/10">
-                <div className="space-y-0.5">
-                  <p className="text-xs text-accent font-bold uppercase">Time Remaining</p>
-                  <p className="text-xl font-mono font-bold text-primary">02d 05h 32m 14s</p>
+                <div className="space-y-0.5 w-full text-center">
+                  <p className="text-xs text-accent font-bold uppercase">Ends At</p>
+                  <p className="text-xl font-mono font-bold text-primary">
+                    {property.auction?.endTime ? new Date(property.auction.endTime).toLocaleString() : 'Not Scheduled'}
+                  </p>
                 </div>
               </div>
 

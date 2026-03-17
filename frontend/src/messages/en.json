@@ -29,5 +29,33 @@
     "allLocations": "All Locations",
     "sortBy": "Sort by",
     "latest": "Latest"
+  },
+  "Auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Enter your credentials to access your account",
+      "emailLabel": "Email Address",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign In",
+      "loading": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create account"
+    },
+    "register": {
+      "title": "Create an Account",
+      "subtitle": "Join the exclusive world of premium real estate",
+      "fullName": "Full Name",
+      "username": "Username",
+      "email": "Email Address",
+      "password": "Password",
+      "joinAs": "Join as",
+      "bidder": "Bidder",
+      "owner": "Owner",
+      "submit": "Create Account",
+      "loading": "Creating...",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
   }
 }

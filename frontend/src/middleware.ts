@@ -4,7 +4,10 @@ import {routing} from './navigation';
 export default createMiddleware(routing);
  
 export const config = {
-  // Skip all paths that should not be internationalized.
-  // This skips the folders "api", "_next" and all files with an extension (e.g. favicon.ico)
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  // Matcher ignoring `/_next` and `/api`
+  matcher: [
+    '/((?!api|_next|_vercel|.*\\..*).*)',
+    // Optional: Only run on root (optional if using always prefix)
+    '/'
+  ]
 };

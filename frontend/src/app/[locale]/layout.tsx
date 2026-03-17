@@ -32,7 +32,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={`${inter.className} antialiased`}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <Navbar />
           <main className="pt-16 min-h-screen">
             {children}
