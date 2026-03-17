@@ -1,0 +1,33 @@
+{
+  "Navbar": {
+    "home": "Trang chủ",
+    "auctions": "Đấu giá",
+    "dashboard": "Bảng điều khiển",
+    "login": "Đăng nhập",
+    "joinNow": "Tham gia ngay",
+    "signOut": "Đăng xuất",
+    "myProfile": "Hồ sơ của tôi"
+  },
+  "Landing": {
+    "heroTitle": "Tương lai của Đấu giá Bất động sản Cao cấp",
+    "heroSubtitle": "Trải nghiệm nền tảng đấu giá bất động sản minh bạch, bảo mật và độc quyền nhất. Đấu giá những bất động sản cao cấp ngay tại nhà của bạn.",
+    "exploreAuctions": "Khám phá đấu giá",
+    "listProperty": "Đăng ký bán tài sản"
+  },
+  "Dashboard": {
+    "welcome": "Chào mừng",
+    "activeBids": "Đấu giá đang tham gia",
+    "walletBalance": "Số dư ví",
+    "auctionsWon": "Đấu giá đã thắng",
+    "recentActivity": "Hoạt động đấu giá gần đây",
+    "topUp": "Nạp tiền đặt cọc"
+  },
+  "Auctions": {
+    "title": "Phiên đấu giá trực tiếp",
+    "subtitle": "Khám phá các bất động sản độc quyền hiện đang mở thầu. Tất cả các danh sách đều được đội ngũ của chúng tôi xác minh tính hợp pháp.",
+    "allTypes": "Tất cả loại",
+    "allLocations": "Tất cả khu vực",
+    "sortBy": "Sắp xếp theo",
+    "latest": "Mới nhất"
+  }
+}

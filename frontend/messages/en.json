@@ -1,0 +1,33 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "auctions": "Auctions",
+    "dashboard": "Dashboard",
+    "login": "Log in",
+    "joinNow": "Join Now",
+    "signOut": "Sign Out",
+    "myProfile": "My Profile"
+  },
+  "Landing": {
+    "heroTitle": "The Future of Premium Real Estate Auctions",
+    "heroSubtitle": "Experience the most transparent, secure, and exclusive property auction platform. Bid on high-end estates from the comfort of your home.",
+    "exploreAuctions": "Explore Auctions",
+    "listProperty": "List Your Property"
+  },
+  "Dashboard": {
+    "welcome": "Welcome",
+    "activeBids": "Active Bids",
+    "walletBalance": "Wallet Balance",
+    "auctionsWon": "Auctions Won",
+    "recentActivity": "Recent Bidding Activity",
+    "topUp": "Top up Deposit"
+  },
+  "Auctions": {
+    "title": "Live Auctions",
+    "subtitle": "Discover exclusive properties currently open for bidding. All listings are verified by our team for legal compliance.",
+    "allTypes": "All Types",
+    "allLocations": "All Locations",
+    "sortBy": "Sort by",
+    "latest": "Latest"
+  }
+}
