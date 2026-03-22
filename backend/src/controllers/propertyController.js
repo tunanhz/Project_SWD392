@@ -37,6 +37,23 @@ const getProperties = async (req, res) => {
   }
 };
 
+const getMyProperties = async (req, res) => {
+  try {
+    const { Auction, PropertyImage } = require('../models');
+    const properties = await Property.findAll({
+      where: { ownerId: req.user.userId },
+      include: [
+        { model: Auction, as: 'auction' },
+        { model: PropertyImage, as: 'images' }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(properties);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const approveProperty = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,4 +87,35 @@ const getPropertyById = async (req, res) => {
   }
 };
 
-module.exports = { postProperty, getProperties, approveProperty, getPropertyById };
+const updateProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const property = await Property.findByPk(id);
+    if (!property) return res.status(404).json({ message: 'Property not found' });
+    
+    if (property.ownerId !== req.user.userId) {
+      return res.status(403).json({ message: 'You can only edit your own properties' });
+    }
+    if (property.status !== 'PENDING') {
+      return res.status(400).json({ message: 'Can only update properties with PENDING status' });
+    }
+
+    const { title, description, address, startingPrice, area, beds, baths, propertyType } = req.body;
+    if (title) property.title = title;
+    if (description) property.description = description;
+    if (address) property.address = address;
+    if (startingPrice) property.startingPrice = startingPrice;
+    if (area !== undefined) property.area = area;
+    if (beds !== undefined) property.beds = beds;
+    if (baths !== undefined) property.baths = baths;
+    if (propertyType) property.propertyType = propertyType;
+
+    await property.save();
+    res.json({ message: 'Property updated successfully', property });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { postProperty, getProperties, getMyProperties, approveProperty, getPropertyById, updateProperty };
+

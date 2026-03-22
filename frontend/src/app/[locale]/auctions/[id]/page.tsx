@@ -1,18 +1,29 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { MOCK_PROPERTIES } from "@/data/mockProperties";
 import Button from "@/components/ui/Button";
 import { useState, useEffect } from "react";
 import { socket } from "@/lib/socket";
+import { useTranslations } from "next-intl";
 
 export default function PropertyDetailsPage() {
   const { id } = useParams();
+  const t = useTranslations("AuctionDetail");
   const [property, setProperty] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bidAmount, setBidAmount] = useState("");
   const [bids, setBids] = useState<{ amount: string; bidTime: string; message: string }[]>([]);
+  const [bidMessage, setBidMessage] = useState("");
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [registering, setRegistering] = useState(false);
+  const [regMessage, setRegMessage] = useState("");
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -30,29 +41,97 @@ export default function PropertyDetailsPage() {
 
     if (id) {
       fetchProperty();
-      socket.connect();
-      socket.emit("joinAuction", id);
-
-      socket.on("newBid", (newBid) => {
-        setBids((prevBids) => [newBid, ...prevBids]);
-      });
-
-      return () => {
-        socket.off("newBid");
-        socket.disconnect();
-      };
     }
   }, [id]);
 
+  // Connect socket AFTER property loads so we have the auction ID
+  useEffect(() => {
+    const auctionId = property?.auction?.id;
+    if (!auctionId) return;
+
+    socket.connect();
+    socket.emit("joinAuction", auctionId);
+
+    socket.on("newBid", (newBid) => {
+      setBids((prevBids) => [newBid, ...prevBids]);
+      setBidMessage("");
+    });
+
+    socket.on("error", (err) => {
+      setBidMessage(`Error: ${err.message}`);
+    });
+
+    return () => {
+      socket.off("newBid");
+      socket.off("error");
+      socket.disconnect();
+    };
+  }, [property]);
+
+  // Check registration status
+  useEffect(() => {
+    const checkReg = async () => {
+      if (!property?.auction?.id) return;
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/auctions/${property.auction.id}/check-registration`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setIsRegistered(data.registered);
+        }
+      } catch { }
+    };
+    checkReg();
+  }, [property]);
+
+  // Fetch existing bid history
+  useEffect(() => {
+    const fetchBids = async () => {
+      if (!property?.auction?.id) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/bids/auction/${property.auction.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setBids(data.map((b: any) => ({ amount: b.amount, bidTime: b.bidTime, message: '' })));
+        }
+      } catch { }
+    };
+    fetchBids();
+  }, [property]);
+
+  const handleRegister = async () => {
+    if (!property?.auction?.id) return;
+    setRegistering(true);
+    setRegMessage("");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:5000/api/auctions/${property.auction.id}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Registration failed');
+      setIsRegistered(true);
+      setRegMessage("Registered & deposit paid successfully!");
+    } catch (err: any) {
+      setRegMessage(`Error: ${err.message}`);
+    } finally {
+      setRegistering(false);
+    }
+  };
+
   const handleBid = () => {
-    if (!bidAmount || !id) return;
+    if (!bidAmount || !property?.auction?.id) return;
+    setBidMessage("");
     
-    // Get real user ID from local storage
     const storedUser = localStorage.getItem("user");
     const userId = storedUser ? JSON.parse(storedUser).id : "anonymous";
     
     socket.emit("placeBid", {
-      auctionId: id,
+      auctionId: property.auction.id,
       userId,
       amount: parseFloat(bidAmount)
     });
@@ -78,6 +157,8 @@ export default function PropertyDetailsPage() {
     </div>
   );
 
+  const auctionActive = property.auction?.status === 'ACTIVE';
+
   return (
     <div className="container px-4 mx-auto py-12 space-y-12 animate-in fade-in duration-700">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -85,7 +166,7 @@ export default function PropertyDetailsPage() {
         <div className="lg:col-span-2 space-y-8">
           <div className="aspect-video rounded-3xl overflow-hidden border border-border/50 shadow-2xl">
             <img 
-              src={property.images?.[0]?.url || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop"} 
+              src={property.images?.[0]?.imageUrl || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop"} 
               alt={property.title} 
               className="w-full h-full object-cover" 
             />
@@ -112,21 +193,21 @@ export default function PropertyDetailsPage() {
 
             <div className="grid grid-cols-3 gap-4 border-y border-border/50 py-6">
               <div className="text-center">
-                <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">Bedrooms</p>
+                <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">{t('beds')}</p>
                 <p className="text-2xl font-bold text-primary">{property.beds || 0}</p>
               </div>
               <div className="text-center border-x border-border/50">
-                <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">Bathrooms</p>
+                <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">{t('baths')}</p>
                 <p className="text-2xl font-bold text-primary">{property.baths || 0}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">Total Area</p>
+                <p className="text-sm text-gray-400 font-semibold mb-1 uppercase tracking-wider">{t('area')}</p>
                 <p className="text-2xl font-bold text-primary">{property.area || 0} m²</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-primary">Property Description</h2>
+              <h2 className="text-2xl font-bold text-primary">{t('propertyDetails')}</h2>
               <p className="text-gray-600 leading-relaxed text-lg">
                 {property.description || "No description provided for this property. Exclusive luxury residence featuring state-of-the-art amenities and breathtaking views."}
               </p>
@@ -138,7 +219,7 @@ export default function PropertyDetailsPage() {
         <div className="space-y-6">
           <div className="glass rounded-3xl p-8 border border-border/50 shadow-2xl sticky top-24 space-y-6">
             <div className="space-y-2 text-center pb-4 border-b border-border/50">
-              <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">Reserve Price</p>
+              <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">{t('reservePrice')}</p>
               <p className="text-4xl font-black text-primary">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(property.startingPrice))}
               </p>
@@ -147,43 +228,84 @@ export default function PropertyDetailsPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center bg-accent/5 p-4 rounded-xl border border-accent/10">
                 <div className="space-y-0.5 w-full text-center">
-                  <p className="text-xs text-accent font-bold uppercase">Ends At</p>
+                  <p className="text-xs text-accent font-bold uppercase">{t('endsAt')}</p>
                   <p className="text-xl font-mono font-bold text-primary">
                     {property.auction?.endTime ? new Date(property.auction.endTime).toLocaleString() : 'Not Scheduled'}
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-primary uppercase tracking-wider">Your Bid</label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                    <input 
-                      type="number"
-                      placeholder="Enter amount"
-                      className="w-full bg-background border border-border h-14 rounded-xl pl-10 pr-4 focus:ring-2 focus:ring-accent outline-none font-bold text-lg"
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                    />
-                  </div>
+              {/* Deposit section */}
+              {property.auction && user?.role === 'CUSTOMER' && !isRegistered && (
+                <div className="space-y-3 p-4 rounded-xl border border-yellow-200 bg-yellow-50">
+                  <p className="text-sm font-bold text-yellow-800">⚠️ Deposit Required</p>
+                  <p className="text-xs text-yellow-700">
+                    Pay a deposit of <strong>${Number(property.auction.depositAmount).toLocaleString()}</strong> to participate in this auction.
+                  </p>
+                  {regMessage && (
+                    <p className={`text-xs font-bold ${regMessage.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>{regMessage}</p>
+                  )}
+                  <Button 
+                    variant="accent" 
+                    size="lg" 
+                    className="w-full h-12"
+                    onClick={handleRegister}
+                    disabled={registering}
+                  >
+                    {registering ? t('processing') : `${t('payDeposit')} ($${Number(property.auction.depositAmount).toLocaleString()})`}
+                  </Button>
                 </div>
-                <Button 
-                  variant="accent" 
-                  size="lg" 
-                  className="w-full h-14 text-xl shadow-xl shadow-accent/20"
-                  onClick={handleBid}
-                >
-                  Place Bid Now
-                </Button>
-                <p className="text-[10px] text-center text-gray-400 uppercase font-medium">
-                  By bidding, you agree to our Terms and Conditions & BR-18 Compliance
-                </p>
-              </div>
+              )}
+
+              {/* Bidding section */}
+              {(isRegistered || user?.role !== 'CUSTOMER') && auctionActive && (
+                <div className="space-y-4 pt-4">
+                  {isRegistered && (
+                    <div className="p-2 rounded-lg bg-green-50 border border-green-100 text-center">
+                      <p className="text-xs font-bold text-green-700">✓ {t('registeredDepositPaid')}</p>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-primary uppercase tracking-wider">{t('yourBid')}</label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                      <input 
+                        type="number"
+                        placeholder="Enter amount"
+                        className="w-full bg-background border border-border h-14 rounded-xl pl-10 pr-4 focus:ring-2 focus:ring-accent outline-none font-bold text-lg"
+                        value={bidAmount}
+                        onChange={(e) => setBidAmount(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    variant="accent" 
+                    size="lg" 
+                    className="w-full h-14 text-xl shadow-xl shadow-accent/20"
+                    onClick={handleBid}
+                  >
+                    {t('placeBidNow')}
+                  </Button>
+                  {bidMessage && (
+                    <p className={`text-xs font-bold text-center p-2 rounded-lg ${bidMessage.startsWith('Error') ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}>
+                      {bidMessage}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-center text-gray-400 uppercase font-medium">
+                    {t('bidTerms')}
+                  </p>
+                </div>
+              )}
+
+              {!auctionActive && !property.auction && (
+                <div className="p-4 text-center rounded-xl bg-gray-50 border border-gray-200">
+                  <p className="text-sm text-gray-500 font-medium">{t('noActiveAuction')}</p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4 pt-6 mt-6 border-t border-border/50">
-                <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">Live Activity</h3>
+                <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">{t('liveActivity')}</h3>
                 <div className="max-h-48 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                     {bids.length > 0 ? bids.map((bid, i) => (
                         <div key={i} className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-3 duration-500">
@@ -191,7 +313,7 @@ export default function PropertyDetailsPage() {
                             <span className="font-bold text-primary">${parseFloat(bid.amount).toLocaleString()}</span>
                         </div>
                     )) : (
-                        <p className="text-xs text-center text-gray-400">No bids yet. Be the first!</p>
+                        <p className="text-xs text-center text-gray-400">{t('noBidsYet')}</p>
                     )}
                 </div>
             </div>

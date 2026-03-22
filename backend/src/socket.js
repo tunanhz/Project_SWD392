@@ -22,14 +22,40 @@ const initSocket = (server) => {
     socket.on('placeBid', async (data) => {
       const { auctionId, userId, amount } = data;
       try {
-        const auction = await Auction.findByPk(auctionId);
+        const auction = await Auction.findByPk(auctionId, {
+          include: [{ model: require('./models').Property, as: 'property' }]
+        });
         if (!auction || auction.status !== 'ACTIVE') {
           return socket.emit('error', { message: 'Auction is not active' });
         }
 
-        // BR-05: Check if auction is still open
+        // Check if auction is still open
         if (new Date() > new Date(auction.endTime)) {
           return socket.emit('error', { message: 'Auction has ended' });
+        }
+
+        // Verify deposit
+        const { Deposit } = require('./models');
+        const deposit = await Deposit.findOne({
+          where: { auctionId, userId, status: 'SUCCESS' }
+        });
+        if (!deposit) {
+          return socket.emit('error', { message: 'You must pay the deposit before bidding' });
+        }
+
+        // Validate bid amount > starting price
+        const startingPrice = parseFloat(auction.property?.startingPrice || 0);
+        if (amount <= startingPrice) {
+          return socket.emit('error', { message: `Bid must be higher than starting price ($${startingPrice.toLocaleString()})` });
+        }
+
+        // Validate bid amount > current highest bid
+        const highestBid = await Bid.findOne({
+          where: { auctionId },
+          order: [['amount', 'DESC']]
+        });
+        if (highestBid && amount <= parseFloat(highestBid.amount)) {
+          return socket.emit('error', { message: `Bid must be higher than current highest ($${parseFloat(highestBid.amount).toLocaleString()})` });
         }
 
         // Create the bid
@@ -39,7 +65,7 @@ const initSocket = (server) => {
           amount
         });
 
-        // BR-06: Anonymize identity when broadcasting (only send bid amount and time)
+        // BR-06: Anonymize identity when broadcasting
         io.to(auctionId).emit('newBid', {
           amount: bid.amount,
           bidTime: bid.bidTime,

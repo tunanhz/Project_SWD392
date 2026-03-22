@@ -1,13 +1,26 @@
 const cron = require('node-cron');
-const { Auction } = require('../models');
+const { Auction, Bid, Property, User } = require('../models');
 const { Op } = require('sequelize');
 
-// BR-05: Automatically close auctions when endTime is reached
+// Run every minute
 const initCron = () => {
   cron.schedule('* * * * *', async () => {
-    console.log('Checking for auctions to close...');
     const now = new Date();
     try {
+      // 1. Activate UPCOMING auctions whose startTime has arrived
+      const upcomingAuctions = await Auction.findAll({
+        where: {
+          startTime: { [Op.lte]: now },
+          status: 'UPCOMING'
+        }
+      });
+      for (const auction of upcomingAuctions) {
+        auction.status = 'ACTIVE';
+        await auction.save();
+        console.log(`Auction ${auction.id} activated.`);
+      }
+
+      // 2. Close ACTIVE auctions whose endTime has passed
       const expiredAuctions = await Auction.findAll({
         where: {
           endTime: { [Op.lte]: now },
@@ -19,12 +32,32 @@ const initCron = () => {
         auction.status = 'COMPLETED';
         await auction.save();
         console.log(`Auction ${auction.id} closed.`);
-        // Here you would also trigger the "Notify Winner" logic
+
+        // Determine winner: highest bid
+        const winningBid = await Bid.findOne({
+          where: { auctionId: auction.id },
+          order: [['amount', 'DESC']],
+          include: [{ model: User, as: 'bidder', attributes: ['id', 'username', 'email'] }]
+        });
+
+        if (winningBid) {
+          console.log(`Winner of auction ${auction.id}: ${winningBid.bidder.username} with bid $${winningBid.amount}`);
+          
+          // Update property status to SOLD
+          const property = await Property.findByPk(auction.propertyId);
+          if (property) {
+            property.status = 'SOLD';
+            await property.save();
+          }
+        } else {
+          console.log(`Auction ${auction.id} closed with no bids.`);
+        }
       }
     } catch (error) {
-      console.error('Error in auction closing cron:', error);
+      console.error('Error in auction cron:', error);
     }
   });
 };
 
 module.exports = { initCron };
+

@@ -14,7 +14,7 @@ interface PropertyCardProps {
     area: number;
     status: string;
     propertyType: string;
-    images?: { url: string }[];
+    images?: { imageUrl: string }[];
     auction?: {
       startTime: string;
       endTime: string;
@@ -25,7 +25,7 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const imageUrl = property.images && property.images.length > 0 
-    ? property.images[0].url 
+    ? property.images[0].imageUrl 
     : "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop";
 
   const status = property.auction?.status || property.status;

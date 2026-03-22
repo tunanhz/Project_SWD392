@@ -15,23 +15,29 @@ export default function DashboardOverview() {
     if (storedUser) setUser(JSON.parse(storedUser));
 
     const fetchDashboardData = async () => {
+      const token = localStorage.getItem("token");
       try {
-        // Simplified fetching: in a real app, these would be dedicated endpoints
-        const response = await fetch("http://localhost:5000/api/properties");
-        if (!response.ok) throw new Error("Failed to fetch dashboard data");
-        const data = await response.json();
-        
-        // Mocking some stats based on real data structure for now
-        // In a real production app, we would have /api/user/stats
+        const [propRes, auctionRes, bidsRes, depositsRes] = await Promise.all([
+          fetch("http://localhost:5000/api/properties"),
+          fetch("http://localhost:5000/api/auctions"),
+          token ? fetch("http://localhost:5000/api/bids/my", { headers: { Authorization: `Bearer ${token}` } }) : Promise.resolve(null),
+          token ? fetch("http://localhost:5000/api/deposits/my", { headers: { Authorization: `Bearer ${token}` } }) : Promise.resolve(null)
+        ]);
+
+        const properties = await propRes.json();
+        const auctions = await auctionRes.json();
+        const myBids = bidsRes && bidsRes.ok ? await bidsRes.json() : [];
+        const myDeposits = depositsRes && depositsRes.ok ? await depositsRes.json() : [];
+
         setStats({
-          activeBids: data.filter((p: any) => p.auction?.status === 'ACTIVE').length,
-          walletBalance: "$25,000",
-          auctionsWon: data.filter((p: any) => p.status === 'SOLD').length,
-          recentActivity: data.slice(0, 3).map((p: any) => ({
-            property: p.title,
-            bid: `$${p.startingPrice}`,
-            status: p.auction?.status || 'Ended',
-            date: new Date(p.createdAt).toLocaleDateString()
+          activeBids: myBids.filter((b: any) => b.auction?.status === 'ACTIVE').length,
+          auctionsWon: properties.filter((p: any) => p.status === 'SOLD').length,
+          totalBidsPlaced: myBids.length,
+          recentActivity: myBids.slice(0, 5).map((bid: any) => ({
+            property: bid.auction?.property?.title || 'N/A',
+            bid: `$${parseFloat(bid.amount).toLocaleString()}`,
+            status: bid.auction?.status || 'Ended',
+            date: new Date(bid.bidTime).toLocaleDateString()
           }))
         });
       } catch (error) {
@@ -61,42 +67,40 @@ export default function DashboardOverview() {
           <h1 className="text-3xl font-black text-primary tracking-tight">
             {t('welcome')}, {user ? user.username : 'User'}
           </h1>
-          <p className="text-gray-500 italic">Here's what's happening with your auctions today.</p>
+          <p className="text-gray-500 italic">{t('subtitle')}</p>
         </div>
-        <Button variant="accent" className="font-bold">{t('topUp')}</Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glass p-6 rounded-2xl border border-border/50 shadow-sm space-y-2">
           <p className="text-[10px] font-black text-accent uppercase tracking-widest">{t('activeBids')}</p>
           <p className="text-3xl font-black text-primary">{stats?.activeBids || 0}</p>
-          <p className="text-xs text-gray-400 italic">Live right now</p>
+          <p className="text-xs text-gray-400 italic">{t('liveRightNow')}</p>
         </div>
         <div className="glass p-6 rounded-2xl border border-border/50 shadow-sm space-y-2 text-primary">
-          <p className="text-[10px] font-black text-accent uppercase tracking-widest">{t('walletBalance')}</p>
-          <p className="text-3xl font-black">{stats?.walletBalance || "$0"}</p>
-          <p className="text-xs text-gray-400 italic">Deposited via VNPay</p>
+          <p className="text-[10px] font-black text-accent uppercase tracking-widest">{t('totalBidsPlaced')}</p>
+          <p className="text-3xl font-black">{stats?.totalBidsPlaced || 0}</p>
+          <p className="text-xs text-gray-400 italic">{t('acrossAllAuctions')}</p>
         </div>
         <div className="glass p-6 rounded-2xl border border-border/50 shadow-sm space-y-2">
           <p className="text-[10px] font-black text-accent uppercase tracking-widest">{t('auctionsWon')}</p>
           <p className="text-3xl font-black text-primary">{stats?.auctionsWon || 0}</p>
-          <p className="text-xs text-gray-400 italic">Verified titles</p>
+          <p className="text-xs text-gray-400 italic">{t('verifiedTitles')}</p>
         </div>
       </div>
 
       <div className="glass rounded-3xl border border-border/50 overflow-hidden shadow-sm">
         <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
           <h2 className="text-xl font-bold text-primary">{t('recentActivity')}</h2>
-          <Button variant="ghost" size="sm" className="font-bold">View All</Button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                <th className="px-6 py-4">Property</th>
-                <th className="px-6 py-4">Current Bid</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">{t('property')}</th>
+                <th className="px-6 py-4">{t('yourBid')}</th>
+                <th className="px-6 py-4">{t('status')}</th>
+                <th className="px-6 py-4">{t('date')}</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-border/20">
@@ -106,8 +110,8 @@ export default function DashboardOverview() {
                   <td className="px-6 py-4 font-mono font-bold text-accent">{row.bid}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                      row.status === 'ACTIVE' || row.status === 'Winning' ? 'bg-green-100 text-green-700' : 
-                      row.status === 'REJECTED' || row.status === 'Outbid' ? 'bg-red-100 text-red-700' : 'bg-accent/10 text-accent'
+                      row.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 
+                      row.status === 'COMPLETED' ? 'bg-blue-100 text-blue-700' : 'bg-accent/10 text-accent'
                     }`}>
                       {row.status}
                     </span>
@@ -117,7 +121,7 @@ export default function DashboardOverview() {
               ))}
               {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">No recent activity found.</td>
+                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400 italic">{t('noRecentActivity')}</td>
                 </tr>
               )}
             </tbody>

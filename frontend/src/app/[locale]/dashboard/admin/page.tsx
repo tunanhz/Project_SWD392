@@ -1,41 +1,83 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+
 export default function AdminReports() {
+  const t = useTranslations("AdminReports");
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [propRes, auctionRes] = await Promise.all([
+          fetch("http://localhost:5000/api/properties"),
+          fetch("http://localhost:5000/api/auctions")
+        ]);
+        const properties = await propRes.json();
+        const auctions = await auctionRes.json();
+
+        const totalBids = auctions.reduce((sum: number, a: any) => sum + (a.bids?.length || 0), 0);
+        const totalDeposits = auctions.reduce((sum: number, a: any) => sum + (a.auctionDeposits?.length || 0), 0);
+        const totalRevenue = auctions
+          .filter((a: any) => a.status === 'COMPLETED')
+          .reduce((sum: number, a: any) => {
+            const highest = a.bids?.sort((x: any, y: any) => y.amount - x.amount)[0];
+            return sum + (highest ? parseFloat(highest.amount) : 0);
+          }, 0);
+
+        setStats({
+          totalProperties: properties.length,
+          pendingApprovals: properties.filter((p: any) => p.status === 'PENDING').length,
+          totalAuctions: auctions.length,
+          activeAuctions: auctions.filter((a: any) => a.status === 'ACTIVE').length,
+          completedAuctions: auctions.filter((a: any) => a.status === 'COMPLETED').length,
+          totalBids,
+          totalDeposits,
+          totalRevenue
+        });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-10 bg-accent/5 rounded-xl w-1/3"></div>
+      <div className="grid grid-cols-2 gap-8">
+        {[1,2,3,4].map(i => <div key={i} className="h-32 bg-accent/5 rounded-2xl"></div>)}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-700">
       <div className="space-y-1">
-        <h1 className="text-3xl font-black text-primary tracking-tight">System Reports</h1>
-        <p className="text-gray-500 italic">Thống kê và báo cáo hệ thống đấu giá.</p>
+        <h1 className="text-3xl font-black text-primary tracking-tight">{t('title')}</h1>
+        <p className="text-gray-500 italic">{t('subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="glass p-8 rounded-3xl border border-border/50 space-y-4">
-            <h3 className="text-lg font-bold text-primary">Monthly Revenue</h3>
-            <div className="h-48 bg-accent/5 rounded-2xl flex items-end justify-between p-4 gap-2">
-                {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
-                    <div key={i} style={{ height: `${h}%` }} className="w-full bg-accent/20 rounded-t-lg hover:bg-accent/40 transition-all cursor-pointer"></div>
-                ))}
-            </div>
-            <p className="text-2xl font-black text-primary">$452,000</p>
-            <p className="text-xs text-green-600 font-bold uppercase">+12.5% from last month</p>
-        </div>
-
-        <div className="glass p-8 rounded-3xl border border-border/50 space-y-6">
-            <h3 className="text-lg font-bold text-primary">System Health</h3>
-            <div className="space-y-4">
-                {[
-                    { label: 'Active Socket Connections', value: '452', status: 'Healthy' },
-                    { label: 'Pending Approvals', value: '8', status: 'Normal' },
-                    { label: 'DB Latency', value: '14ms', status: 'Optimal' },
-                ].map((s, i) => (
-                    <div key={i} className="flex justify-between items-center pb-4 border-b border-border/50 last:border-0 last:pb-0">
-                        <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{s.label}</p>
-                            <p className="text-xl font-bold text-primary">{s.value}</p>
-                        </div>
-                        <span className="text-xs font-black text-accent">{s.status}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          { label: t('totalProperties'), value: stats?.totalProperties || 0, color: 'text-primary' },
+          { label: t('pending'), value: stats?.pendingApprovals || 0, color: 'text-yellow-600' },
+          { label: t('active'), value: stats?.activeAuctions || 0, color: 'text-green-600' },
+          { label: t('completed'), value: stats?.completedAuctions || 0, color: 'text-blue-600' },
+          { label: 'Total Bids', value: stats?.totalBids || 0, color: 'text-accent' },
+          { label: 'Total Deposits', value: stats?.totalDeposits || 0, color: 'text-primary' },
+          { label: 'Total Revenue', value: `$${(stats?.totalRevenue || 0).toLocaleString()}`, color: 'text-green-600' },
+          { label: 'System Status', value: 'Healthy', color: 'text-green-600' },
+        ].map((s, i) => (
+          <div key={i} className="glass p-6 rounded-2xl border border-border/50 shadow-sm space-y-2">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{s.label}</p>
+            <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
