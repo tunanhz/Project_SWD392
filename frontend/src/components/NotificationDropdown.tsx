@@ -26,7 +26,7 @@ export default function NotificationDropdown() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/notifications", {
+      const res = await fetch("http://127.0.0.1:5000/api/notifications", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch notifications");
@@ -58,7 +58,7 @@ export default function NotificationDropdown() {
     e.stopPropagation();
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+      await fetch(`http://127.0.0.1:5000/api/notifications/${id}/read`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -73,7 +73,7 @@ export default function NotificationDropdown() {
       const unreadIds = notifications.filter(n => !n.isRead).map(n => n.id);
       
       await Promise.all(unreadIds.map(id => 
-        fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+        fetch(`http://127.0.0.1:5000/api/notifications/${id}/read`, {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` }
         })

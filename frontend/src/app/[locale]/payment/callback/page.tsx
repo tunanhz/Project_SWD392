@@ -22,7 +22,7 @@ function PaymentCallbackContent() {
           return;
         }
 
-        const res = await fetch(`http://localhost:5000/api/payments/callback?${queryString}`);
+        const res = await fetch(`http://127.0.0.1:5000/api/payments/callback?${queryString}`);
         const data = await res.json();
         
         if (data.success) {

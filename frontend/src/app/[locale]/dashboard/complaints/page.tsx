@@ -11,7 +11,7 @@ export default function MyComplaintsPage() {
   const fetchComplaints = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/complaints/my", {
+      const res = await fetch("http://127.0.0.1:5000/api/complaints/my", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch complaints");

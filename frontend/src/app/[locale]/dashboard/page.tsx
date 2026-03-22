@@ -18,10 +18,10 @@ export default function DashboardOverview() {
       const token = localStorage.getItem("token");
       try {
         const [propRes, auctionRes, bidsRes, depositsRes] = await Promise.all([
-          fetch("http://localhost:5000/api/properties"),
-          fetch("http://localhost:5000/api/auctions"),
-          token ? fetch("http://localhost:5000/api/bids/my", { headers: { Authorization: `Bearer ${token}` } }) : Promise.resolve(null),
-          token ? fetch("http://localhost:5000/api/deposits/my", { headers: { Authorization: `Bearer ${token}` } }) : Promise.resolve(null)
+          fetch("http://127.0.0.1:5000/api/properties"),
+          fetch("http://127.0.0.1:5000/api/auctions"),
+          token ? fetch("http://127.0.0.1:5000/api/bids/my", { headers: { Authorization: `Bearer ${token}` } }) : Promise.resolve(null),
+          token ? fetch("http://127.0.0.1:5000/api/deposits/my", { headers: { Authorization: `Bearer ${token}` } }) : Promise.resolve(null)
         ]);
 
         const properties = await propRes.json();

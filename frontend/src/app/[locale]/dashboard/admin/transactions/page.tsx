@@ -15,7 +15,7 @@ export default function AdminTransactionsPage() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/payments/transactions", {
+      const res = await fetch("http://127.0.0.1:5000/api/payments/transactions", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch transactions");
@@ -35,7 +35,7 @@ export default function AdminTransactionsPage() {
   const handleRefund = async (depositId: string) => {
     setActionMsg('');
     try {
-      const res = await fetch(`http://localhost:5000/api/payments/refund/${depositId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/payments/refund/${depositId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });

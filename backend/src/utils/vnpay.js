@@ -12,7 +12,7 @@ function sortObject(obj) {
 	}
 	str.sort();
     for (key = 0; key < str.length; key++) {
-        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+        sorted[str[key]] = encodeURIComponent(obj[decodeURIComponent(str[key])]).replace(/%20/g, "+");
     }
     return sorted;
 }
@@ -22,9 +22,9 @@ const createPaymentUrl = (params, secret) => {
     const signData = querystring.stringify(vnpParams, { encode: false });
     const hmac = crypto.createHmac("sha512", secret);
     const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
-    vnpParams['vnp_SecureHash'] = signed;
     
-    return `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?${querystring.stringify(vnpParams, { encode: false })}`;
+    const finalParams = { ...vnpParams, vnp_SecureHash: signed };
+    return `https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?${querystring.stringify(finalParams, { encode: false })}`;
 };
 
 const verifyReturnUrl = (vnpParams, secret) => {

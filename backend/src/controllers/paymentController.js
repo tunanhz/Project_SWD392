@@ -10,15 +10,28 @@ const initiatePayment = async (req, res) => {
     const { amount, auctionId } = req.body;
     const vnpHashSecret = process.env.VNPAY_HASH_SECRET;
     
-    // Create a PENDING payment record
-    const payment = await Payment.create({
-      amount,
-      userId: req.user.userId,
-      type: 'AUCTION_DEPOSIT',
-      auctionId,
-      status: 'PENDING',
-      paymentMethod: 'VNPAY'
+    // Find or create a PENDING payment record
+    let payment = await Payment.findOne({
+      where: {
+        userId: req.user.userId,
+        auctionId,
+        status: 'PENDING',
+        type: 'AUCTION_DEPOSIT'
+      }
     });
+
+    if (!payment) {
+      payment = await Payment.create({
+        amount,
+        userId: req.user.userId,
+        type: 'AUCTION_DEPOSIT',
+        auctionId,
+        status: 'PENDING',
+        paymentMethod: 'VNPAY'
+      });
+    } else {
+      await payment.update({ amount });
+    }
 
     const vnpParams = {
       vnp_Version: '2.1.0',
@@ -133,20 +146,34 @@ const checkoutAuction = async (req, res) => {
     const winningBid = auction.bids.reduce((max, bid) => Math.max(max, Number(bid.amount)), 0);
     const balance = winningBid - Number(auction.depositAmount);
 
-    const payment = await Payment.create({
-      amount: balance,
-      userId: req.user.userId,
-      type: 'AUCTION_CHECKOUT',
-      auctionId: auction.id,
-      status: 'PENDING',
-      paymentMethod: 'VNPAY'
+    let payment = await Payment.findOne({
+      where: {
+        auctionId: auction.id,
+        userId: req.user.userId,
+        status: 'PENDING',
+        type: 'AUCTION_CHECKOUT'
+      }
     });
+
+    if (!payment) {
+      payment = await Payment.create({
+        amount: balance,
+        userId: req.user.userId,
+        type: 'AUCTION_CHECKOUT',
+        auctionId: auction.id,
+        status: 'PENDING',
+        paymentMethod: 'VNPAY'
+      });
+    } else {
+      // Update amount if balance changed (unlikely for checkout but good for consistency)
+      await payment.update({ amount: balance });
+    }
 
     const vnpParams = {
       vnp_Version: '2.1.0',
       vnp_Command: 'pay',
       vnp_TmnCode: process.env.VNPAY_TMN_CODE,
-      vnp_Amount: balance * 100,
+      vnp_Amount: Number(payment.amount) * 100,
       vnp_CurrCode: 'VND',
       vnp_TxnRef: payment.id,
       vnp_OrderInfo: `Final payment for auction ${auctionId}`,

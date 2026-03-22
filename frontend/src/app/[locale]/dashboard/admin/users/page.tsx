@@ -16,7 +16,7 @@ export default function ManageUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/users", {
+      const res = await fetch("http://127.0.0.1:5000/api/users", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch users");
@@ -34,7 +34,7 @@ export default function ManageUsersPage() {
   const handleUpdateRole = async (userId: string) => {
     setMessage('');
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/users/${userId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ role: editRole })
@@ -52,7 +52,7 @@ export default function ManageUsersPage() {
     if (!confirm(`Are you sure you want to delete user "${username}"?`)) return;
     setMessage('');
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/users/${userId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

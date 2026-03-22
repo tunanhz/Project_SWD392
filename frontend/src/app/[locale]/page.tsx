@@ -44,8 +44,8 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const [propRes, auctionRes] = await Promise.all([
-          fetch("http://localhost:5000/api/properties"),
-          fetch("http://localhost:5000/api/auctions")
+          fetch("http://127.0.0.1:5000/api/properties"),
+          fetch("http://127.0.0.1:5000/api/auctions")
         ]);
         const properties = await propRes.json();
         const auctions = await auctionRes.json();

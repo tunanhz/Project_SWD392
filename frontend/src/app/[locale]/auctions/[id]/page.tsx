@@ -28,7 +28,7 @@ export default function PropertyDetailsPage() {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/properties/${id}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/properties/${id}`);
         if (!response.ok) throw new Error("Property not found");
         const data = await response.json();
         setProperty(data);
@@ -85,7 +85,7 @@ export default function PropertyDetailsPage() {
       const token = localStorage.getItem("token");
       if (!token) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/auctions/${property.auction.id}/check-registration`, {
+        const res = await fetch(`http://127.0.0.1:5000/api/auctions/${property.auction.id}/check-registration`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -102,7 +102,7 @@ export default function PropertyDetailsPage() {
     const fetchBids = async () => {
       if (!property?.auction?.id) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/bids/auction/${property.auction.id}`);
+        const res = await fetch(`http://127.0.0.1:5000/api/bids/auction/${property.auction.id}`);
         if (res.ok) {
           const data = await res.json();
           setBids(data.map((b: any) => ({ amount: b.amount, bidTime: b.bidTime, message: '' })));
@@ -118,7 +118,7 @@ export default function PropertyDetailsPage() {
     setRegMessage("");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/auctions/${property.auction.id}/register`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/auctions/${property.auction.id}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
       });
@@ -235,7 +235,7 @@ export default function PropertyDetailsPage() {
                     {property.LegalDocuments.map((doc: any) => (
                       <a 
                         key={doc.id} 
-                        href={`http://localhost:5000/${doc.filePath}`} 
+                        href={`http://127.0.0.1:5000/${doc.filePath}`} 
                         target="_blank" 
                         rel="noreferrer" 
                         className="flex items-center gap-2 px-4 py-2 bg-accent/5 rounded-xl border border-accent/20 text-accent font-medium hover:bg-accent/10 transition"

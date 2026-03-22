@@ -14,7 +14,7 @@ export default function StaffDashboard() {
 
   const fetchPending = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/properties");
+      const res = await fetch("http://127.0.0.1:5000/api/properties");
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setProperties(data.filter((p: any) => p.status === 'PENDING'));
@@ -30,7 +30,7 @@ export default function StaffDashboard() {
   const handleAction = async (id: string, status: 'APPROVED' | 'REJECTED') => {
     setActionMsg('');
     try {
-      const res = await fetch(`http://localhost:5000/api/properties/${id}/approve`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/properties/${id}/approve`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status })

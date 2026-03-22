@@ -22,7 +22,7 @@ export default function CreateAuctionPage() {
   useEffect(() => {
     const fetchApproved = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/properties");
+        const res = await fetch("http://127.0.0.1:5000/api/properties");
         if (!res.ok) throw new Error("Failed to fetch");
         const data = await res.json();
         // Only show APPROVED properties without an existing auction
@@ -41,7 +41,7 @@ export default function CreateAuctionPage() {
     setSubmitting(true);
     setMessage('');
     try {
-      const res = await fetch("http://localhost:5000/api/auctions", {
+      const res = await fetch("http://127.0.0.1:5000/api/auctions", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -56,7 +56,7 @@ export default function CreateAuctionPage() {
       setMessage('Auction created successfully!');
       setFormData({ propertyId: '', startTime: '', endTime: '', depositAmount: '' });
       // Refresh property list
-      const res2 = await fetch("http://localhost:5000/api/properties");
+      const res2 = await fetch("http://127.0.0.1:5000/api/properties");
       const data = await res2.json();
       setProperties(data.filter((p: any) => p.status === 'APPROVED' && !p.auction));
     } catch (err: any) {

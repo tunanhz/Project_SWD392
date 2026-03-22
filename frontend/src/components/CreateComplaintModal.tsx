@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
@@ -26,7 +26,7 @@ export default function CreateComplaintModal({ auctionId, isOpen, onClose, onSuc
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/complaints`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/complaints`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,3 +102,4 @@ export default function CreateComplaintModal({ auctionId, isOpen, onClose, onSuc
     </div>
   );
 }
+

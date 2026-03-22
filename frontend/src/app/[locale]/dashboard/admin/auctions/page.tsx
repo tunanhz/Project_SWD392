@@ -13,7 +13,7 @@ export default function MonitorAuctionsPage() {
   useEffect(() => {
     const fetchAuctions = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auctions");
+        const res = await fetch("http://127.0.0.1:5000/api/auctions");
         if (!res.ok) throw new Error("Failed to fetch auctions");
         const data = await res.json();
         setAuctions(data);
@@ -36,7 +36,7 @@ export default function MonitorAuctionsPage() {
       }
 
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/auctions/${id}/${action}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/auctions/${id}/${action}`, {
         method: "PATCH",
         headers: { 
           "Content-Type": "application/json",

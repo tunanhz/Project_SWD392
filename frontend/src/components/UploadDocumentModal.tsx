@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
@@ -31,7 +31,7 @@ export default function UploadDocumentModal({ propertyId, isOpen, onClose, onSuc
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/properties/${propertyId}/documents`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/properties/${propertyId}/documents`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`
@@ -88,3 +88,4 @@ export default function UploadDocumentModal({ propertyId, isOpen, onClose, onSuc
     </div>
   );
 }
+

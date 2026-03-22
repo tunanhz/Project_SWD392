@@ -23,7 +23,7 @@ export default function MyPropertiesPage() {
 
   const fetchProperties = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/properties/my", {
+      const res = await fetch("http://127.0.0.1:5000/api/properties/my", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch");
@@ -51,8 +51,8 @@ export default function MyPropertiesPage() {
     setMessage('');
     try {
       const url = editingProperty
-        ? `http://localhost:5000/api/properties/${editingProperty.id}`
-        : 'http://localhost:5000/api/properties';
+        ? `http://127.0.0.1:5000/api/properties/${editingProperty.id}`
+        : 'http://127.0.0.1:5000/api/properties';
       const method = editingProperty ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -81,7 +81,7 @@ export default function MyPropertiesPage() {
 
   const handleWithdraw = async (id: string | number) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/properties/${id}/withdraw`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/properties/${id}/withdraw`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` }
       });

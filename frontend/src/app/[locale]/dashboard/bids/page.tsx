@@ -22,7 +22,7 @@ export default function MyBidsPage() {
     const fetchBids = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/bids/my", {
+        const res = await fetch("http://127.0.0.1:5000/api/bids/my", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!res.ok) throw new Error("Failed to fetch bids");
@@ -40,7 +40,7 @@ export default function MyBidsPage() {
   const handleCheckout = async (auctionId: string) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/payments/checkout/${auctionId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/payments/checkout/${auctionId}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -74,7 +74,7 @@ export default function MyBidsPage() {
       }
 
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/payments/receipt/${paymentId}`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/payments/receipt/${paymentId}`, {
          headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to download receipt");
@@ -147,7 +147,7 @@ export default function MyBidsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     {bid.auction?.status === 'COMPLETED' && bid.auction?.winnerId === user?.id && (
-                      bid.auction.payment && (!Array.isArray(bid.auction.payment) || bid.auction.payment.length > 0) ? (
+                      bid.auction.payment && (Array.isArray(bid.auction.payment) ? bid.auction.payment.some((p: any) => p.status === 'SUCCESS' && p.type === 'AUCTION_CHECKOUT') : bid.auction.payment.status === 'SUCCESS') ? (
                         <div className="flex flex-col items-end gap-2">
                           <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 drop-shadow-sm inline-block">
                             {t('paid') || 'Paid & Transferred'}

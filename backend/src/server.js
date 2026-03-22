@@ -17,10 +17,12 @@ initSocket(server);
 initCron();
 initDataRetention();
 
-sequelize.sync({ alter: true }).then(() => {
+// SYNC DATABASE (Use { alter: true } ONLY when changing the schema, then turn off)
+sequelize.sync({ alter: false }).then(() => {
   console.log('Database synced successfully');
-  server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+    console.log(`Local Access: http://127.0.0.1:${PORT}`);
   });
 }).catch(err => {
   console.error('Unable to sync database:', err);

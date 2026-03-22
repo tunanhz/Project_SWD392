@@ -13,7 +13,7 @@ export default function StaffComplaintsPage() {
   const fetchComplaints = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/complaints", {
+      const res = await fetch("http://127.0.0.1:5000/api/complaints", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Failed to fetch complaints");
@@ -37,7 +37,7 @@ export default function StaffComplaintsPage() {
     setActionMsg('');
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/complaints/${id}/respond`, {
+      const res = await fetch(`http://127.0.0.1:5000/api/complaints/${id}/respond`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',

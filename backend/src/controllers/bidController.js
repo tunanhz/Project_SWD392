@@ -36,9 +36,21 @@ const getMyBids = async (req, res) => {
           ]
         }
       ],
-      order: [['bidTime', 'DESC']]
+      order: [['bidTime', 'DESC']],
     });
-    res.json(bids);
+
+    // Manual deduplication just in case joins cause multiple rows
+    const uniqueBids = [];
+    const seenIds = new Set();
+    
+    for (const bid of bids) {
+      if (!seenIds.has(bid.id)) {
+        uniqueBids.push(bid);
+        seenIds.add(bid.id);
+      }
+    }
+
+    res.json(uniqueBids);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
