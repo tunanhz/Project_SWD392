@@ -1,4 +1,5 @@
-const { Auction, Property, Bid, Deposit, User } = require('../models');
+const { Auction, Property, Bid, Deposit, User, Payment } = require('../models');
+const { createPaymentUrl } = require('../utils/vnpay');
 
 const createAuction = async (req, res) => {
   try {
@@ -98,16 +99,34 @@ const registerForAuction = async (req, res) => {
       return res.status(400).json({ message: 'Already registered for this auction' });
     }
 
-    // Create deposit record
-    const deposit = await Deposit.create({
-      auctionId: id,
-      userId,
+    // Create a PENDING payment record
+    const payment = await Payment.create({
       amount: auction.depositAmount,
-      status: 'SUCCESS', // In real app, this would be PENDING until payment gateway confirms
-      paymentDate: new Date()
+      userId,
+      type: 'AUCTION_DEPOSIT',
+      auctionId: id,
+      status: 'PENDING',
+      paymentMethod: 'VNPAY'
     });
 
-    res.status(201).json({ message: 'Registered successfully', deposit });
+    const vnpParams = {
+      vnp_Version: '2.1.0',
+      vnp_Command: 'pay',
+      vnp_TmnCode: process.env.VNPAY_TMN_CODE,
+      vnp_Amount: auction.depositAmount * 100,
+      vnp_CurrCode: 'VND',
+      vnp_TxnRef: payment.id,
+      vnp_OrderInfo: `Deposit for auction ${id}`,
+      vnp_OrderType: 'other',
+      vnp_Locale: 'vn',
+      vnp_ReturnUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/payment/callback`,
+      vnp_IpAddr: req.ip || '127.0.0.1',
+      vnp_CreateDate: new Date().toISOString().replace(/[-:T.Z]/g, '').substring(0, 14)
+    };
+
+    const paymentUrl = createPaymentUrl(vnpParams, process.env.VNPAY_HASH_SECRET);
+
+    res.status(201).json({ message: 'Payment initiated', paymentUrl, paymentId: payment.id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -128,4 +147,73 @@ const checkRegistration = async (req, res) => {
   }
 };
 
-module.exports = { createAuction, getAuctions, getAuctionById, registerForAuction, checkRegistration };
+// BR-13: Emergency pause auction
+const pauseAuction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const auction = await Auction.findByPk(id);
+    if (!auction) return res.status(404).json({ message: 'Auction not found' });
+    if (auction.status !== 'ACTIVE') {
+      return res.status(400).json({ message: 'Only active auctions can be paused' });
+    }
+
+    auction.status = 'PAUSED';
+    auction.pauseReason = reason || 'Technical issue affecting fairness';
+    auction.pausedAt = new Date();
+    await auction.save();
+
+    // Notify via socket if available
+    try {
+      const { getIo } = require('../socket');
+      const io = getIo();
+      if (io) {
+        io.to(id).emit('auctionPaused', {
+          message: `Phiên đấu giá đã bị tạm dừng: ${auction.pauseReason}`,
+          pausedAt: auction.pausedAt
+        });
+      }
+    } catch (e) { /* socket not available */ }
+
+    res.json({ message: 'Auction paused successfully', auction });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Resume a paused auction
+const resumeAuction = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const auction = await Auction.findByPk(id);
+    if (!auction) return res.status(404).json({ message: 'Auction not found' });
+    if (auction.status !== 'PAUSED') {
+      return res.status(400).json({ message: 'Only paused auctions can be resumed' });
+    }
+
+    auction.status = 'ACTIVE';
+    auction.pauseReason = null;
+    auction.pausedAt = null;
+    await auction.save();
+
+    // Notify via socket
+    try {
+      const { getIo } = require('../socket');
+      const io = getIo();
+      if (io) {
+        io.to(id).emit('auctionResumed', {
+          message: 'Phiên đấu giá đã được tiếp tục!',
+          resumedAt: new Date()
+        });
+      }
+    } catch (e) { /* socket not available */ }
+
+    res.json({ message: 'Auction resumed successfully', auction });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { createAuction, getAuctions, getAuctionById, registerForAuction, checkRegistration, pauseAuction, resumeAuction };

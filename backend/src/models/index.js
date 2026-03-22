@@ -8,6 +8,9 @@ const ActivityLog = require('./ActivityLog');
 const PropertyImage = require('./PropertyImage');
 const VerificationToken = require('./VerificationToken');
 const Report = require('./Report');
+const LegalDocument = require('./LegalDocument');
+const Notification = require('./Notification');
+const Complaint = require('./Complaint');
 
 // 1. User - Property (Owner)
 User.hasMany(Property, { foreignKey: 'ownerId', as: 'ownedProperties', onDelete: 'CASCADE' });
@@ -37,6 +40,10 @@ Deposit.belongsTo(Auction, { foreignKey: 'auctionId', as: 'auction' });
 Auction.hasOne(Payment, { foreignKey: 'auctionId', as: 'payment', onDelete: 'CASCADE' });
 Payment.belongsTo(Auction, { foreignKey: 'auctionId', as: 'auction' });
 
+// 7a. User - Payment
+User.hasMany(Payment, { foreignKey: 'userId', as: 'payments', onDelete: 'CASCADE' });
+Payment.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
 // 8. Property - PropertyImage
 Property.hasMany(PropertyImage, { foreignKey: 'propertyId', as: 'images', onDelete: 'CASCADE' });
 PropertyImage.belongsTo(Property, { foreignKey: 'propertyId', as: 'property' });
@@ -53,6 +60,22 @@ VerificationToken.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasMany(Auction, { foreignKey: 'winnerId', as: 'wonAuctions', onDelete: 'SET NULL' });
 Auction.belongsTo(User, { foreignKey: 'winnerId', as: 'winner' });
 
+// 12. Property - LegalDocument
+Property.hasMany(LegalDocument, { foreignKey: 'propertyId', as: 'legalDocuments', onDelete: 'CASCADE' });
+LegalDocument.belongsTo(Property, { foreignKey: 'propertyId', as: 'property' });
+
+// 13. User - Notification
+User.hasMany(Notification, { foreignKey: 'userId', as: 'notifications', onDelete: 'CASCADE' });
+Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// 14. User - Complaint (Customer creates)
+User.hasMany(Complaint, { foreignKey: 'userId', as: 'complaints', onDelete: 'CASCADE' });
+Complaint.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+// 15. Auction - Complaint
+Auction.hasMany(Complaint, { foreignKey: 'auctionId', as: 'complaints', onDelete: 'CASCADE' });
+Complaint.belongsTo(Auction, { foreignKey: 'auctionId', as: 'auction' });
+
 module.exports = {
   User,
   Property,
@@ -63,5 +86,8 @@ module.exports = {
   ActivityLog,
   PropertyImage,
   VerificationToken,
-  Report
+  Report,
+  LegalDocument,
+  Notification,
+  Complaint
 };

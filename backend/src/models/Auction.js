@@ -16,7 +16,7 @@ const Auction = sequelize.define('Auction', {
     allowNull: false
   },
   status: {
-    type: DataTypes.ENUM('UPCOMING', 'ACTIVE', 'COMPLETED', 'CANCELLED'),
+    type: DataTypes.ENUM('UPCOMING', 'ACTIVE', 'COMPLETED', 'CANCELLED', 'PAUSED'),
     defaultValue: 'UPCOMING'
   },
   depositAmount: {
@@ -25,6 +25,14 @@ const Auction = sequelize.define('Auction', {
   },
   winnerId: {
     type: DataTypes.UUID,
+    allowNull: true
+  },
+  pauseReason: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  pausedAt: {
+    type: DataTypes.DATE,
     allowNull: true
   }
 }, {

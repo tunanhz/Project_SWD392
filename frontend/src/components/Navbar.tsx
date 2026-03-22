@@ -5,6 +5,7 @@ import { Link, useRouter, usePathname } from "@/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import Button from './ui/Button';
 import DtaLogo from './DtaLogo';
+import NotificationDropdown from './NotificationDropdown';
 
 const Navbar = () => {
   const t = useTranslations("Navbar");
@@ -76,6 +77,9 @@ const Navbar = () => {
                   <span className="text-sm font-bold text-primary">{user.username}</span>
                   <span className="text-[10px] font-bold text-accent uppercase tracking-wider">{user.role}</span>
                 </div>
+
+                <NotificationDropdown />
+
                 <div className="relative group">
                   <div className="h-10 w-10 rounded-full bg-accent/20 border-2 border-accent/20 flex items-center justify-center cursor-pointer hover:border-accent transition-all ring-2 ring-transparent group-hover:ring-accent/20 overflow-hidden">
                     <span className="text-accent font-black text-lg">{user.username.charAt(0).toUpperCase()}</span>

@@ -2,12 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import CreateComplaintModal from "@/components/CreateComplaintModal";
 
 export default function MyBidsPage() {
   const t = useTranslations("MyBids");
   const [bids, setBids] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  
+  // Complaint Modal State
+  const [complaintModalOpen, setComplaintModalOpen] = useState(false);
+  const [selectedAuctionId, setSelectedAuctionId] = useState<string>('');
+  const [selectedAuctionTitle, setSelectedAuctionTitle] = useState<string>('');
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
@@ -39,13 +46,50 @@ export default function MyBidsPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(t('checkoutSuccess') || "Payment successful! Property ownership transferred.");
-        window.location.reload();
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        } else {
+          alert(t('checkoutSuccess') || "Payment successful! Property ownership transferred.");
+          window.location.reload();
+        }
       } else {
         alert(data.error || "Checkout failed");
       }
     } catch (err) {
       alert("Error processing checkout");
+    }
+  };
+
+  const handleDownloadReceipt = async (paymentData: any) => {
+    try {
+      let paymentId = paymentData.id;
+      if (Array.isArray(paymentData)) {
+        const checkoutPayment = paymentData.find(p => p.type === 'AUCTION_CHECKOUT');
+        if (checkoutPayment) paymentId = checkoutPayment.id;
+        else paymentId = paymentData[0]?.id;
+      }
+      if (!paymentId) {
+        alert("Receipt not available");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:5000/api/payments/receipt/${paymentId}`, {
+         headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to download receipt");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `Receipt_${paymentId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("Error downloading receipt");
     }
   };
 
@@ -103,10 +147,21 @@ export default function MyBidsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     {bid.auction?.status === 'COMPLETED' && bid.auction?.winnerId === user?.id && (
-                      bid.auction.payment ? (
-                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 drop-shadow-sm inline-block">
-                          {t('paid') || 'Paid & Transferred'}
-                        </span>
+                      bid.auction.payment && (!Array.isArray(bid.auction.payment) || bid.auction.payment.length > 0) ? (
+                        <div className="flex flex-col items-end gap-2">
+                          <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 drop-shadow-sm inline-block">
+                            {t('paid') || 'Paid & Transferred'}
+                          </span>
+                          <button 
+                            onClick={() => handleDownloadReceipt(bid.auction.payment)}
+                            className="flex items-center gap-1 text-[10px] font-bold text-accent hover:text-accent/80 hover:underline transition-all"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            {t('downloadReceipt')}
+                          </button>
+                        </div>
                       ) : (
                         <div className="flex flex-col items-end gap-1">
                           <span className="text-[10px] text-amber-600 font-bold uppercase tracking-wider animate-pulse">
@@ -121,6 +176,20 @@ export default function MyBidsPage() {
                         </div>
                       )
                     )}
+                    {bid.auction?.status === 'COMPLETED' && (
+                      <div className="flex flex-col items-end gap-2 mt-2">
+                        <button 
+                          onClick={() => {
+                            setSelectedAuctionId(bid.auction.id);
+                            setSelectedAuctionTitle(bid.auction.property?.title || 'Unknown');
+                            setComplaintModalOpen(true);
+                          }}
+                          className="text-[10px] font-bold text-red-500 hover:text-red-600 hover:underline transition-all"
+                        >
+                          Report Issue
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -128,6 +197,18 @@ export default function MyBidsPage() {
           </table>
         </div>
       )}
+
+      {/* Complaint Modal */}
+      <CreateComplaintModal 
+        isOpen={complaintModalOpen}
+        onClose={() => setComplaintModalOpen(false)}
+        auctionId={selectedAuctionId}
+        title={selectedAuctionTitle}
+        onSuccess={() => {
+          setComplaintModalOpen(false);
+          alert("Complaint filed successfully.");
+        }}
+      />
     </div>
   );
 }

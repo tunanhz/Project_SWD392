@@ -11,6 +11,10 @@ const Payment = sequelize.define('Payment', {
     type: DataTypes.DECIMAL(15, 2),
     allowNull: false
   },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: true
+  },
   date: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
@@ -18,6 +22,23 @@ const Payment = sequelize.define('Payment', {
   type: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  status: {
+    type: DataTypes.ENUM('PENDING', 'SUCCESS', 'FAILED'),
+    defaultValue: 'SUCCESS'
+  },
+  transactionId: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  paymentMethod: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'VNPAY'
+  },
+  receiptUrl: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   timestamps: true

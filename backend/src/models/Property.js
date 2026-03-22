@@ -37,10 +37,13 @@ const Property = sequelize.define('Property', {
   },
   startingPrice: {
     type: DataTypes.DECIMAL(15, 2),
-    allowNull: false
+    allowNull: false,
+    validate: {
+      min: 1 // Must be > 0 VND
+    }
   },
   status: {
-    type: DataTypes.ENUM('PENDING', 'APPROVED', 'REJECTED', 'SOLD'),
+    type: DataTypes.ENUM('PENDING', 'APPROVED', 'REJECTED', 'SOLD', 'WITHDRAWN'),
     defaultValue: 'PENDING'
   }
 }, {

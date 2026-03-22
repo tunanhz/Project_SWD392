@@ -90,7 +90,7 @@ export default function LoginPage() {
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="password">
                 {t('passwordLabel')}
               </label>
-              <Link href="#" className="text-xs text-accent hover:underline">{t('forgotPassword')}</Link>
+              <Link href="/forgot-password" className="text-xs text-accent hover:underline">{t('forgotPassword')}</Link>
             </div>
             <input
               id="password"

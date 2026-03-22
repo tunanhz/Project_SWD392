@@ -14,6 +14,7 @@ const menuByRole: Record<string, MenuItem[]> = {
   CUSTOMER: [
     { labelKey: 'overview', href: '/dashboard', icon: 'M4 6h16M4 12h16M4 18h16' },
     { labelKey: 'myBids', href: '/dashboard/bids', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+    { labelKey: 'complaints', href: '/dashboard/complaints', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
   ],
   OWNER: [
     { labelKey: 'overview', href: '/dashboard', icon: 'M4 6h16M4 12h16M4 18h16' },
@@ -23,11 +24,15 @@ const menuByRole: Record<string, MenuItem[]> = {
     { labelKey: 'overview', href: '/dashboard', icon: 'M4 6h16M4 12h16M4 18h16' },
     { labelKey: 'approvalCenter', href: '/dashboard/staff', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
     { labelKey: 'createAuction', href: '/dashboard/staff/create-auction', icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6' },
+    { labelKey: 'transactions', href: '/dashboard/admin/transactions', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { labelKey: 'complaints', href: '/dashboard/staff/complaints', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
   ],
   ADMIN: [
     { labelKey: 'overview', href: '/dashboard', icon: 'M4 6h16M4 12h16M4 18h16' },
     { labelKey: 'manageUsers', href: '/dashboard/admin/users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
     { labelKey: 'monitorAuctions', href: '/dashboard/admin/auctions', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
+    { labelKey: 'transactions', href: '/dashboard/admin/transactions', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { labelKey: 'complaints', href: '/dashboard/staff/complaints', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
     { labelKey: 'reports', href: '/dashboard/admin', icon: 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
   ]
 };

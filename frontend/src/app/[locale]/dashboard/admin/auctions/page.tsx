@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/navigation";
+import Button from "@/components/ui/Button";
 
 export default function MonitorAuctionsPage() {
   const t = useTranslations("AdminAuctions");
@@ -24,6 +25,44 @@ export default function MonitorAuctionsPage() {
     };
     fetchAuctions();
   }, []);
+
+  const handlePauseAction = async (id: string | number, action: 'pause' | 'resume') => {
+    try {
+      let bodyData: { pauseReason?: string } = {};
+      if (action === 'pause') {
+        const reason = window.prompt("Enter detailed reason for pausing this auction (required):");
+        if (!reason || reason.trim() === "") return;
+        bodyData = { pauseReason: reason };
+      }
+
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:5000/api/auctions/${id}/${action}`, {
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify(bodyData)
+      });
+      
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || `Failed to ${action} auction`);
+      }
+      
+      alert(action === 'pause' ? t('pauseSuccess') : t('resumeSuccess'));
+      
+      // Update UI state locally to avoid full fetch delay
+      setAuctions(prev => prev.map(a => {
+        if (a.id === id) {
+          return { ...a, status: action === 'pause' ? 'PAUSED' : 'ACTIVE', pauseReason: action === 'pause' ? bodyData.pauseReason : null };
+        }
+        return a;
+      }));
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
 
   if (loading) return (
     <div className="space-y-4 animate-pulse">
@@ -70,6 +109,7 @@ export default function MonitorAuctionsPage() {
                 <th className="px-6 py-4">{t('deposit')}</th>
                 <th className="px-6 py-4">{t('startTime')}</th>
                 <th className="px-6 py-4">{t('endTime')}</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-border/20">
@@ -95,6 +135,18 @@ export default function MonitorAuctionsPage() {
                   <td className="px-6 py-4 font-mono">{auction.auctionDeposits?.length || 0}</td>
                   <td className="px-6 py-4 text-gray-500 text-xs">{new Date(auction.startTime).toLocaleString()}</td>
                   <td className="px-6 py-4 text-gray-500 text-xs">{new Date(auction.endTime).toLocaleString()}</td>
+                  <td className="px-6 py-4 text-right">
+                    {auction.status === 'ACTIVE' && (
+                      <Button variant="outline" size="sm" onClick={() => handlePauseAction(auction.id, 'pause')} className="border-orange-200 text-orange-600 hover:bg-orange-50">
+                        {t('pauseAuction')}
+                      </Button>
+                    )}
+                    {auction.status === 'PAUSED' && (
+                      <Button variant="accent" size="sm" onClick={() => handlePauseAction(auction.id, 'resume')}>
+                        {t('resumeAuction')}
+                      </Button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

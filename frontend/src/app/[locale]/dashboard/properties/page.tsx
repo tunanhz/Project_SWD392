@@ -3,6 +3,7 @@
 import Button from "@/components/ui/Button";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import UploadDocumentModal from "@/components/UploadDocumentModal";
 
 export default function MyPropertiesPage() {
   const t = useTranslations("MyProperties");
@@ -16,6 +17,7 @@ export default function MyPropertiesPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [uploadModal, setUploadModal] = useState<{isOpen: boolean, propertyId: string | number}>({ isOpen: false, propertyId: '' });
 
   const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
@@ -74,6 +76,23 @@ export default function MyPropertiesPage() {
       setMessage(`Error: ${err.message}`);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleWithdraw = async (id: string | number) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/properties/${id}/withdraw`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || err.message || 'Failed to withdraw');
+      }
+      setMessage(t('withdrawSuccess'));
+      fetchProperties();
+    } catch (err: any) {
+      setMessage(`Error: ${err.message}`);
     }
   };
 
@@ -208,15 +227,36 @@ export default function MyPropertiesPage() {
                   <span className="text-gray-400 ml-2">{t('ends')}: {new Date(prop.auction.endTime).toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex gap-2 pt-2 border-t border-border/50">
+              <div className="flex gap-2 pt-2 border-t border-border/50 flex-wrap">
                 {prop.status === 'PENDING' && (
                   <Button variant="outline" size="sm" onClick={() => startEdit(prop)}>{t('edit')}</Button>
+                )}
+                {(prop.status === 'PENDING' || prop.status === 'APPROVED') && (
+                  <Button variant="outline" size="sm" onClick={() => setUploadModal({ isOpen: true, propertyId: prop.id })}>
+                    {t('uploadDoc')}
+                  </Button>
+                )}
+                {(prop.status === 'PENDING' || prop.status === 'APPROVED') && !prop.auction && (
+                  <Button variant="outline" size="sm" onClick={() => handleWithdraw(prop.id)} className="text-red-500 border-red-200 hover:bg-red-50">
+                    {t('withdraw')}
+                  </Button>
                 )}
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <UploadDocumentModal 
+        isOpen={uploadModal.isOpen} 
+        propertyId={uploadModal.propertyId} 
+        onClose={() => setUploadModal({ isOpen: false, propertyId: '' })} 
+        onSuccess={() => {
+          setUploadModal({ isOpen: false, propertyId: '' });
+          setMessage(t('uploadSuccess'));
+          fetchProperties();
+        }}
+      />
     </div>
   );
 }

@@ -1,27 +1,30 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const VerificationToken = sequelize.define('VerificationToken', {
+const LegalDocument = sequelize.define('LegalDocument', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
-  token: {
+  fileName: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  type: {
-    type: DataTypes.ENUM('EMAIL_VERIFY', 'PASSWORD_RESET'),
-    allowNull: false,
-    defaultValue: 'EMAIL_VERIFY'
-  },
-  expiresAt: {
-    type: DataTypes.DATE,
+  filePath: {
+    type: DataTypes.STRING,
     allowNull: false
+  },
+  fileType: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  uploadedAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
   timestamps: true
 });
 
-module.exports = VerificationToken;
+module.exports = LegalDocument;

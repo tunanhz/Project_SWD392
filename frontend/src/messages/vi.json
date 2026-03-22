@@ -6,7 +6,10 @@
     "login": "Đăng nhập",
     "joinNow": "Tham gia ngay",
     "signOut": "Đăng xuất",
-    "myProfile": "Hồ sơ của tôi"
+    "myProfile": "Hồ sơ của tôi",
+    "notifications": "Thông báo",
+    "noNotifications": "Không có thông báo mới",
+    "markAllRead": "Đánh dấu đã đọc"
   },
   "Landing": {
     "heroTitle": "Tương lai của Đấu giá Bất động sản Cao cấp",
@@ -71,6 +74,31 @@
       "loading": "Đang tạo...",
       "hasAccount": "Đã có tài khoản?",
       "signIn": "Đăng nhập"
+    },
+    "forgot": {
+      "title": "Quên Mật khẩu",
+      "subtitle": "Nhập email của bạn để nhận liên kết khôi phục",
+      "email": "Địa chỉ Email",
+      "submit": "Gửi liên kết",
+      "loading": "Đang gửi...",
+      "success": "Nếu email hợp lệ, bạn sẽ nhận được một liên kết khôi phục mật khẩu.",
+      "backToLogin": "Quay lại đăng nhập"
+    },
+    "reset": {
+      "title": "Đặt lại Mật khẩu",
+      "subtitle": "Nhập mật khẩu mới của bạn",
+      "password": "Mật khẩu mới",
+      "submit": "Xác nhận đổi mật khẩu",
+      "loading": "Đang xử lý...",
+      "success": "Mật khẩu đã được thay đổi. Bạn có thể đăng nhập.",
+      "invalid": "Liên kết không hợp lệ hoặc đã hết hạn."
+    },
+    "verify": {
+      "title": "Xác minh Email",
+      "verifying": "Đang xác minh địa chỉ email của bạn...",
+      "success": "Email của bạn đã được xác minh thành công! Bạn có thể đăng nhập.",
+      "error": "Liên kết xác minh không hợp lệ hoặc đã hết hạn.",
+      "backToLogin": "Đi đến Đăng nhập"
     }
   },
   "MyBids": {
@@ -81,7 +109,10 @@
     "property": "Tài sản",
     "yourBid": "Giá bạn đặt",
     "auctionStatus": "Trạng thái đấu giá",
-    "bidTime": "Thời gian đặt giá"
+    "bidTime": "Thời gian đặt giá",
+    "paid": "Đã thanh toán & Chuyển quyền",
+    "checkoutBtn": "Thanh toán số dư",
+    "downloadReceipt": "Tải Biên lai"
   },
   "MyProperties": {
     "title": "Tài sản của tôi",
@@ -106,21 +137,35 @@
     "bedsAndBaths": "PN/PT",
     "edit": "Sửa",
     "auction": "Đấu giá",
-    "ends": "Kết thúc"
+    "ends": "Kết thúc",
+    "withdraw": "Rút lại",
+    "withdrawing": "Đang rút...",
+    "uploadDoc": "Tải tài liệu",
+    "viewDocs": "Xem tài liệu",
+    "withdrawSuccess": "Rút tài sản thành công.",
+    "uploadSuccess": "Tải tài liệu lên thành công.",
+    "noDocs": "Chưa có tài liệu pháp lý."
   },
   "StaffApproval": {
     "title": "Trung tâm Duyệt tài sản",
-    "subtitle": "Xem xét và phê duyệt hoặc từ chối hồ sơ tài sản từ chủ sở hữu.",
-    "noPending": "Không có hồ sơ chờ duyệt.",
-    "noPendingHint": "Tất cả hồ sơ đã được xử lý.",
-    "submittedBy": "Người gửi",
-    "startingPrice": "Giá khởi điểm",
-    "approve": "Duyệt",
-    "reject": "Từ chối",
-    "property": "Tài sản",
+    "subtitle": "Xem xét và xác minh danh sách bất động sản mới",
+    "noPending": "Không có tài sản nào đang chờ duyệt.",
     "owner": "Chủ sở hữu",
-    "price": "Giá",
-    "action": "Thao tác"
+    "property": "Tài sản",
+    "startingPrice": "Giá khởi điểm",
+    "address": "Địa chỉ",
+    "action": "Hành động",
+    "approve": "Duyệt",
+    "reject": "Từ chối"
+  },
+  "PaymentCallback": {
+    "title": "Trạng thái Thanh toán",
+    "processing": "Đang xác minh giao dịch...",
+    "success": "Thanh toán thành công!",
+    "failed": "Thanh toán thất bại",
+    "successMsg": "Giao dịch của bạn đã được xử lý thành công. Bạn có thể xem chi tiết trong bảng điều khiển.",
+    "failedMsg": "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại hoặc liên hệ hỗ trợ.",
+    "returnBtn": "Trở về Bảng điều khiển"
   },
   "CreateAuction": {
     "title": "Tạo phiên Đấu giá",
@@ -158,7 +203,11 @@
     "status": "Trạng thái",
     "startTime": "Bắt đầu",
     "endTime": "Kết thúc",
-    "deposit": "Đặt cọc"
+    "deposit": "Đặt cọc",
+    "pauseAuction": "Tạm dừng",
+    "resumeAuction": "Tiếp tục",
+    "pauseSuccess": "Đã tạm dừng phiên đấu giá",
+    "resumeSuccess": "Đã tiếp tục phiên đấu giá"
   },
   "AdminReports": {
     "title": "Báo cáo Hệ thống",
@@ -195,8 +244,14 @@
     "errBidHigherStarting": "Giá đặt phải cao hơn giá khởi điểm ({price})",
     "errBidHigherCurrent": "Giá đặt phải cao hơn giá cao nhất hiện tại ({price})",
     "errPropertyNotFound": "Không tìm thấy bất động sản",
-    "errRegistrationFailed": "Đăng ký thất bại",
-    "successRegistration": "Đăng ký và nạp tiền cọc thành công!"
+    "successRegistration": "Đăng ký và nạp tiền cọc thành công!",
+    "pausedWarning": "Phiên đấu giá đang bị tạm dừng.",
+    "pauseReason": "Lý do: ",
+    "bidStepHelp": "Bước giá tối thiểu là 1,000,000 VND",
+    "pauseAuction": "Tạm dừng Phiên đấu",
+    "resumeAuction": "Tiếp tục Phiên đấu",
+    "pauseSuccess": "Đã tạm dừng phiên đấu giá",
+    "resumeSuccess": "Đã tiếp tục phiên đấu giá"
   },
   "Sidebar": {
     "overview": "Tổng quan",
@@ -207,6 +262,41 @@
     "manageUsers": "Quản lý người dùng",
     "monitorAuctions": "Giám sát đấu giá",
     "reports": "Báo cáo",
+    "transactions": "Giao dịch",
+    "complaints": "Khiếu nại",
     "dashboard": "Bảng điều khiển"
+  },
+  "AdminTransactions": {
+    "title": "Trung tâm Giao dịch",
+    "subtitle": "Giám sát thanh toán và quản lý hoàn trả cọc",
+    "paymentsTab": "Thanh toán",
+    "depositsTab": "Tiền cọc",
+    "paymentId": "Mã GD",
+    "amount": "Số tiền",
+    "status": "Trạng thái",
+    "method": "Phương thức",
+    "date": "Ngày",
+    "user": "Người dùng",
+    "auction": "Phiên đấu giá",
+    "refund": "Hoàn tiền",
+    "refundSuccess": "Hoàn trả tiền cọc thành công!",
+    "noRecords": "Không tìm thấy dữ liệu.",
+    "refundInfo": "Hoàn tiền tự động sử dụng thông tin ngân hàng của người dùng."
+  },
+  "Complaints": {
+    "myTitle": "Khiếu nại của tôi",
+    "mySubtitle": "Theo dõi và quản lý khiếu nại bạn đã gửi",
+    "staffTitle": "Quản lý Khiếu nại",
+    "staffSubtitle": "Xem xét và phản hồi khiếu nại trong 24h",
+    "subject": "Tiêu đề",
+    "status": "Trạng thái",
+    "date": "Ngày gửi",
+    "deadline": "Hạn chót",
+    "action": "Thao tác",
+    "respond": "Phản hồi",
+    "view": "Xem",
+    "noComplaints": "Không tìm thấy khiếu nại nào.",
+    "respondSuccess": "Đã gửi phản hồi thành công!",
+    "fileComplaint": "Gửi Khiếu nại"
   }
 }

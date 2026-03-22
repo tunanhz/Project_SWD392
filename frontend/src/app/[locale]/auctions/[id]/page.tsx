@@ -124,8 +124,13 @@ export default function PropertyDetailsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Registration failed');
-      setIsRegistered(true);
-      setRegMessage(t('successRegistration'));
+      
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        setIsRegistered(true);
+        setRegMessage(t('successRegistration'));
+      }
     } catch (err: any) {
       const msg = err.message === 'Registration failed' ? t('errRegistrationFailed') : err.message;
       setRegMessage(`Error: ${msg}`);
@@ -222,6 +227,28 @@ export default function PropertyDetailsPage() {
               <p className="text-gray-600 leading-relaxed text-lg">
                 {property.description || "No description provided for this property. Exclusive luxury residence featuring state-of-the-art amenities and breathtaking views."}
               </p>
+              
+              {property.LegalDocuments && property.LegalDocuments.length > 0 && (
+                <div className="mt-8 pt-8 border-t border-border/50">
+                  <h3 className="text-xl font-bold text-primary mb-4">{t('viewDocs')}</h3>
+                  <div className="flex flex-wrap gap-4">
+                    {property.LegalDocuments.map((doc: any) => (
+                      <a 
+                        key={doc.id} 
+                        href={`http://localhost:5000/${doc.filePath}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="flex items-center gap-2 px-4 py-2 bg-accent/5 rounded-xl border border-accent/20 text-accent font-medium hover:bg-accent/10 transition"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0-2.25v2.25A2.25 2.25 0 0010.5 9h2.25m-2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        </svg>
+                        {doc.fileName}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -269,40 +296,59 @@ export default function PropertyDetailsPage() {
               )}
 
               {/* Bidding section */}
-              {(isRegistered || user?.role !== 'CUSTOMER') && auctionActive && (
+              {(isRegistered || user?.role !== 'CUSTOMER') && (auctionActive || property.auction?.status === 'PAUSED') && (
                 <div className="space-y-4 pt-4">
-                  {isRegistered && (
+                  {isRegistered && auctionActive && (
                     <div className="p-2 rounded-lg bg-green-50 border border-green-100 text-center">
                       <p className="text-xs font-bold text-green-700">✓ {t('registeredDepositPaid')}</p>
                     </div>
                   )}
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-primary uppercase tracking-wider">{t('yourBid')}</label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                      <input 
-                        type="number"
-                        placeholder="Enter amount"
-                        className="w-full bg-background border border-border h-14 rounded-xl pl-10 pr-4 focus:ring-2 focus:ring-accent outline-none font-bold text-lg"
-                        value={bidAmount}
-                        onChange={(e) => setBidAmount(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <Button 
-                    variant="accent" 
-                    size="lg" 
-                    className="w-full h-14 text-xl shadow-xl shadow-accent/20"
-                    onClick={handleBid}
-                  >
-                    {t('placeBidNow')}
-                  </Button>
-                  {bidMessage && (
-                    <p className={`text-xs font-bold text-center p-2 rounded-lg ${bidMessage.startsWith('Error') ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}>
-                      {bidMessage}
-                    </p>
+
+                  {property.auction?.status === 'PAUSED' ? (
+                     <div className="p-4 rounded-xl bg-orange-50 border border-orange-200">
+                        <p className="font-bold text-orange-700 flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          {t('pausedWarning')}
+                        </p>
+                        {property.auction.pauseReason && (
+                          <p className="text-sm text-orange-600 mt-2 font-medium">{t('pauseReason')} {property.auction.pauseReason}</p>
+                        )}
+                     </div>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-primary uppercase tracking-wider">{t('yourBid')}</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                          <input 
+                            type="number"
+                            placeholder="Enter amount"
+                            step="1000000"
+                            className="w-full bg-background border border-border h-14 rounded-xl pl-10 pr-4 focus:ring-2 focus:ring-accent outline-none font-bold text-lg"
+                            value={bidAmount}
+                            onChange={(e) => setBidAmount(e.target.value)}
+                          />
+                        </div>
+                        <p className="text-[11px] text-gray-500 italic mt-1 ml-1">{t('bidStepHelp')}</p>
+                      </div>
+                      <Button 
+                        variant="accent" 
+                        size="lg" 
+                        className="w-full h-14 text-xl shadow-xl shadow-accent/20"
+                        onClick={handleBid}
+                      >
+                        {t('placeBidNow')}
+                      </Button>
+                      {bidMessage && (
+                        <p className={`text-xs font-bold text-center p-2 rounded-lg ${bidMessage.startsWith('Error') ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}>
+                          {bidMessage}
+                        </p>
+                      )}
+                    </>
                   )}
-                  <p className="text-[10px] text-center text-gray-400 uppercase font-medium">
+                  <p className="text-[10px] text-center text-gray-400 uppercase font-medium mt-4">
                     {t('bidTerms')}
                   </p>
                 </div>

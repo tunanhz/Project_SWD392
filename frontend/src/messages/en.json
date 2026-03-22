@@ -6,7 +6,10 @@
     "login": "Log in",
     "joinNow": "Join Now",
     "signOut": "Sign Out",
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "notifications": "Notifications",
+    "noNotifications": "No new notifications",
+    "markAllRead": "Mark all as read"
   },
   "Landing": {
     "heroTitle": "The Future of Premium Real Estate Auctions",
@@ -71,6 +74,31 @@
       "loading": "Creating...",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in"
+    },
+    "forgot": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive a password reset link",
+      "email": "Email Address",
+      "submit": "Send Reset Link",
+      "loading": "Sending...",
+      "success": "If your email is registered, you will receive a reset link shortly.",
+      "backToLogin": "Back to login"
+    },
+    "reset": {
+      "title": "Reset Password",
+      "subtitle": "Enter your new password below",
+      "password": "New Password",
+      "submit": "Reset Password",
+      "loading": "Resetting...",
+      "success": "Password reset successfully. You can now log in.",
+      "invalid": "Invalid or expired token."
+    },
+    "verify": {
+      "title": "Email Verification",
+      "verifying": "Verifying your email address...",
+      "success": "Your email has been successfully verified! You can now log in.",
+      "error": "Invalid or expired verification link.",
+      "backToLogin": "Go to Login"
     }
   },
   "MyBids": {
@@ -81,7 +109,10 @@
     "property": "Property",
     "yourBid": "Your Bid",
     "auctionStatus": "Auction Status",
-    "bidTime": "Bid Time"
+    "bidTime": "Bid Time",
+    "paid": "Paid & Transferred",
+    "checkoutBtn": "Pay Balance",
+    "downloadReceipt": "Download Receipt"
   },
   "MyProperties": {
     "title": "My Properties",
@@ -106,21 +137,35 @@
     "bedsAndBaths": "Beds/Baths",
     "edit": "Edit",
     "auction": "Auction",
-    "ends": "Ends"
+    "ends": "Ends",
+    "withdraw": "Withdraw",
+    "withdrawing": "Withdrawing...",
+    "uploadDoc": "Upload Document",
+    "viewDocs": "View Legal Docs",
+    "withdrawSuccess": "Property withdrawn successfully.",
+    "uploadSuccess": "Document uploaded successfully.",
+    "noDocs": "No legal documents attached."
   },
   "StaffApproval": {
     "title": "Property Approval Center",
-    "subtitle": "Review and approve or reject property submissions from owners.",
-    "noPending": "No pending property submissions.",
-    "noPendingHint": "All property submissions have been processed.",
-    "submittedBy": "Submitted by",
-    "startingPrice": "Starting Price",
-    "approve": "Approve",
-    "reject": "Reject",
-    "property": "Property",
+    "subtitle": "Review and verify new property listings",
+    "noPending": "No properties pending approval.",
     "owner": "Owner",
-    "price": "Price",
-    "action": "Action"
+    "property": "Property",
+    "startingPrice": "Starting Price",
+    "address": "Address",
+    "action": "Action",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "PaymentCallback": {
+    "title": "Payment Status",
+    "processing": "Verifying transaction...",
+    "success": "Payment Successful!",
+    "failed": "Payment Failed",
+    "successMsg": "Your transaction has been processed. You can now view the details in your dashboard.",
+    "failedMsg": "There was an issue processing your payment. Please try again or contact support.",
+    "returnBtn": "Return to Dashboard"
   },
   "CreateAuction": {
     "title": "Create Auction",
@@ -158,7 +203,11 @@
     "status": "Status",
     "startTime": "Start Time",
     "endTime": "End Time",
-    "deposit": "Deposit"
+    "deposit": "Deposit",
+    "pauseAuction": "Pause Auction",
+    "resumeAuction": "Resume Auction",
+    "pauseSuccess": "Auction paused successfully",
+    "resumeSuccess": "Auction resumed successfully"
   },
   "AdminReports": {
     "title": "System Reports",
@@ -195,8 +244,49 @@
     "errBidHigherStarting": "Bid must be higher than starting price ({price})",
     "errBidHigherCurrent": "Bid must be higher than current highest ({price})",
     "errPropertyNotFound": "Property not found",
-    "errRegistrationFailed": "Registration failed",
-    "successRegistration": "Registered & deposit paid successfully!"
+    "successRegistration": "Registered & deposit paid successfully!",
+    "pausedWarning": "This auction is currently paused.",
+    "pauseReason": "Reason: ",
+    "bidStepHelp": "Minimum bid increment is $1,000,000",
+    "pauseAuction": "Pause Auction",
+    "createAuctionBtn": "Create Auction",
+    "createSuccess": "Auction created successfully!",
+    "resumeAuction": "Resume Auction",
+    "pauseSuccess": "Auction paused successfully",
+    "resumeSuccess": "Auction resumed successfully"
+  },
+  "AdminTransactions": {
+    "title": "Transaction Center",
+    "subtitle": "Monitor payments and manage deposit refunds",
+    "paymentsTab": "Checkout Payments",
+    "depositsTab": "Auction Deposits",
+    "paymentId": "Payment ID",
+    "amount": "Amount",
+    "status": "Status",
+    "method": "Method",
+    "date": "Date",
+    "user": "User",
+    "auction": "Auction",
+    "refund": "Refund",
+    "refundSuccess": "Deposit refunded successfully!",
+    "noRecords": "No records found.",
+    "refundInfo": "Refund automatically uses banking information verified by the user."
+  },
+  "Complaints": {
+    "myTitle": "My Complaints",
+    "mySubtitle": "Track and manage your filed complaints",
+    "staffTitle": "Complaint Management",
+    "staffSubtitle": "Review and respond to user complaints within 24h SLA",
+    "subject": "Subject",
+    "status": "Status",
+    "date": "Filed On",
+    "deadline": "Deadline",
+    "action": "Action",
+    "respond": "Respond",
+    "view": "View",
+    "noComplaints": "No complaints found.",
+    "respondSuccess": "Response sent successfully!",
+    "fileComplaint": "File Complaint"
   },
   "Sidebar": {
     "overview": "Overview",
@@ -207,6 +297,8 @@
     "manageUsers": "Manage Users",
     "monitorAuctions": "Monitor Auctions",
     "reports": "Reports",
+    "transactions": "Transactions",
+    "complaints": "Complaints",
     "dashboard": "Dashboard"
   }
 }
