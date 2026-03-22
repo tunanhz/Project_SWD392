@@ -47,4 +47,58 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, updateUser, deleteUser };
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.userId, {
+      attributes: { exclude: ['password'] }
+    });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    // Decrypt bank account if needed or keep it encrypted depending on requirements.
+    // For now we just return the user object (bank_account will be encrypted).
+    // If the frontend needs to show the raw bank account, we would decrypt it here.
+    
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const updateMyProfile = async (req, res) => {
+  try {
+    const { name, phone, bank_account } = req.body;
+    const user = await User.findByPk(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    if (name) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (bank_account !== undefined) user.bank_account = bank_account; // hook will re-encrypt
+
+    await user.save();
+    
+    const { password, ...userData } = user.toJSON();
+    res.json({ message: 'Profile updated successfully', user: userData });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image provided' });
+    }
+    
+    const user = await User.findByPk(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.avatar = req.file.path; // Cloudinary URL
+    await user.save();
+
+    res.json({ message: 'Avatar updated successfully', avatar: user.avatar });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getAllUsers, updateUser, deleteUser, getProfile, updateMyProfile, uploadAvatar };

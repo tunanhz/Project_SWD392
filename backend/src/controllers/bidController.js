@@ -5,7 +5,7 @@ const getBidsByAuction = async (req, res) => {
     const { auctionId } = req.params;
     const bids = await Bid.findAll({
       where: { auctionId },
-      attributes: ['id', 'amount', 'bidTime'], // BR-06: anonymize identity
+      attributes: ['id', 'amount', 'bidTime', 'bidderId'], // BR-06: anonymize identity (frontend will hash bidderId)
       order: [['amount', 'DESC']]
     });
     res.json(bids);

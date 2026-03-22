@@ -11,8 +11,15 @@ export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    const checkUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) setUser(JSON.parse(storedUser));
+    };
+
+    checkUser();
+
+    window.addEventListener("auth-change", checkUser);
+    window.addEventListener("userProfileUpdated", checkUser);
 
     const fetchDashboardData = async () => {
       const token = localStorage.getItem("token");
@@ -48,6 +55,11 @@ export default function DashboardOverview() {
     };
 
     fetchDashboardData();
+
+    return () => {
+      window.removeEventListener("auth-change", checkUser);
+      window.removeEventListener("userProfileUpdated", checkUser);
+    };
   }, []);
 
   if (loading) return (
@@ -65,7 +77,7 @@ export default function DashboardOverview() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div className="space-y-1">
           <h1 className="text-3xl font-black text-primary tracking-tight">
-            {t('welcome')}, {user ? user.username : 'User'}
+            {t('welcome')}, {user ? (user.name || user.username) : 'User'}
           </h1>
           <p className="text-gray-500 italic">{t('subtitle')}</p>
         </div>

@@ -11,12 +11,10 @@ export default function MyPropertiesPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
-  const [formData, setFormData] = useState({
-    title: '', description: '', address: '', startingPrice: '',
-    area: '', beds: '0', baths: '0', propertyType: 'House'
-  });
+  const [formData, setFormData] = useState({ title: '', description: '', address: '', startingPrice: '', area: '', propertyType: 'House' });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [formErrors, setFormErrors] = useState<any>({});
   const [uploadModal, setUploadModal] = useState<{isOpen: boolean, propertyId: string | number}>({ isOpen: false, propertyId: '' });
 
   const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
@@ -39,14 +37,28 @@ export default function MyPropertiesPage() {
   useEffect(() => { fetchProperties(); }, []);
 
   const resetForm = () => {
-    setFormData({ title: '', description: '', address: '', startingPrice: '', area: '', beds: '0', baths: '0', propertyType: 'House' });
+    setFormData({ title: '', description: '', address: '', startingPrice: '', area: '', propertyType: 'House' });
     setEditingProperty(null);
     setShowForm(false);
     setMessage('');
+    setFormErrors({});
+  };
+
+  const validateForm = () => {
+    const errors: any = {};
+    if (!formData.title || formData.title.trim().length < 5) errors.title = t('title') === 'Title' ? "Title must be at least 5 characters" : "Tiêu đề phải có ít nhất 5 ký tự";
+    if (!formData.description || formData.description.trim().length < 20) errors.description = t('title') === 'Title' ? "Description must be at least 20 characters" : "Mô tả phải có ít nhất 20 ký tự";
+    if (!formData.address || formData.address.trim().length < 5) errors.address = t('title') === 'Title' ? "Valid address required" : "Địa chỉ không hợp lệ";
+    if (!formData.startingPrice || parseFloat(formData.startingPrice) <= 0) errors.startingPrice = t('title') === 'Title' ? "Price must be greater than 0" : "Giá khởi điểm phải lớn hơn 0";
+    if (!formData.area || parseFloat(formData.area) <= 0) errors.area = t('title') === 'Title' ? "Area must be greater than 0" : "Diện tích phải lớn hơn 0";
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setSubmitting(true);
     setMessage('');
     try {
@@ -61,9 +73,8 @@ export default function MyPropertiesPage() {
         body: JSON.stringify({
           ...formData,
           startingPrice: parseFloat(formData.startingPrice),
-          area: parseFloat(formData.area) || null,
-          beds: parseInt(formData.beds),
-          baths: parseInt(formData.baths)
+          area: parseFloat(formData.area) || 0,
+          propertyType: formData.propertyType
         })
       });
       if (!res.ok) {
@@ -104,8 +115,6 @@ export default function MyPropertiesPage() {
       address: prop.address,
       startingPrice: prop.startingPrice.toString(),
       area: prop.area?.toString() || '',
-      beds: prop.beds?.toString() || '0',
-      baths: prop.baths?.toString() || '0',
       propertyType: prop.propertyType || 'House'
     });
     setShowForm(true);
@@ -146,31 +155,28 @@ export default function MyPropertiesPage() {
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-medium">{t('titleField')}</label>
-              <input type="text" required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full h-12 rounded-xl border border-border/50 bg-background/50 px-4 text-sm focus:ring-2 focus:ring-accent outline-none" />
+              <input type="text" value={formData.title} onChange={e => { setFormData({...formData, title: e.target.value}); setFormErrors({...formErrors, title: undefined}) }} className={`w-full h-12 rounded-xl border ${formErrors.title ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background/50 px-4 text-sm focus:ring-2 outline-none`} />
+              {formErrors.title && <p className="text-red-500 text-xs font-medium">{formErrors.title}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-medium">{t('description')}</label>
-              <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full h-24 rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm focus:ring-2 focus:ring-accent outline-none resize-none" />
+              <textarea value={formData.description} onChange={e => { setFormData({...formData, description: e.target.value}); setFormErrors({...formErrors, description: undefined}) }} className={`w-full h-24 rounded-xl border ${formErrors.description ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background/50 px-4 py-3 text-sm focus:ring-2 outline-none resize-none`} />
+              {formErrors.description && <p className="text-red-500 text-xs font-medium">{formErrors.description}</p>}
             </div>
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-medium">{t('address')}</label>
-              <input type="text" required value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full h-12 rounded-xl border border-border/50 bg-background/50 px-4 text-sm focus:ring-2 focus:ring-accent outline-none" />
+              <input type="text" value={formData.address} onChange={e => { setFormData({...formData, address: e.target.value}); setFormErrors({...formErrors, address: undefined}) }} className={`w-full h-12 rounded-xl border ${formErrors.address ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background/50 px-4 text-sm focus:ring-2 outline-none`} />
+              {formErrors.address && <p className="text-red-500 text-xs font-medium">{formErrors.address}</p>}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('startingPrice')}</label>
-              <input type="number" required value={formData.startingPrice} onChange={e => setFormData({...formData, startingPrice: e.target.value})} className="w-full h-12 rounded-xl border border-border/50 bg-background/50 px-4 text-sm focus:ring-2 focus:ring-accent outline-none" />
+              <input type="number" value={formData.startingPrice} onChange={e => { setFormData({...formData, startingPrice: e.target.value}); setFormErrors({...formErrors, startingPrice: undefined}) }} className={`w-full h-12 rounded-xl border ${formErrors.startingPrice ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background/50 px-4 text-sm focus:ring-2 outline-none`} />
+              {formErrors.startingPrice && <p className="text-red-500 text-xs font-medium">{formErrors.startingPrice}</p>}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('area')}</label>
-              <input type="number" value={formData.area} onChange={e => setFormData({...formData, area: e.target.value})} className="w-full h-12 rounded-xl border border-border/50 bg-background/50 px-4 text-sm focus:ring-2 focus:ring-accent outline-none" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('beds')}</label>
-              <input type="number" value={formData.beds} onChange={e => setFormData({...formData, beds: e.target.value})} className="w-full h-12 rounded-xl border border-border/50 bg-background/50 px-4 text-sm focus:ring-2 focus:ring-accent outline-none" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">{t('baths')}</label>
-              <input type="number" value={formData.baths} onChange={e => setFormData({...formData, baths: e.target.value})} className="w-full h-12 rounded-xl border border-border/50 bg-background/50 px-4 text-sm focus:ring-2 focus:ring-accent outline-none" />
+              <input type="number" value={formData.area} onChange={e => { setFormData({...formData, area: e.target.value}); setFormErrors({...formErrors, area: undefined}) }} className={`w-full h-12 rounded-xl border ${formErrors.area ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background/50 px-4 text-sm focus:ring-2 outline-none`} />
+              {formErrors.area && <p className="text-red-500 text-xs font-medium">{formErrors.area}</p>}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">{t('propertyType')}</label>
@@ -216,10 +222,9 @@ export default function MyPropertiesPage() {
                   {prop.status}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center text-xs border-t border-border/50 pt-3">
+              <div className="grid grid-cols-2 gap-2 text-center text-xs border-t border-border/50 pt-3">
                 <div><span className="text-gray-400 block">{t('price')}</span><span className="font-bold text-primary">${Number(prop.startingPrice).toLocaleString()}</span></div>
                 <div><span className="text-gray-400 block">{t('area')}</span><span className="font-bold text-primary">{prop.area || '-'} m²</span></div>
-                <div><span className="text-gray-400 block">{t('bedsAndBaths')}</span><span className="font-bold text-primary">{prop.beds}/{prop.baths}</span></div>
               </div>
               {prop.auction && (
                 <div className="bg-accent/5 p-3 rounded-xl border border-accent/10 text-xs">

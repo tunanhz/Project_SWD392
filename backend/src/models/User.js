@@ -22,6 +22,10 @@ const User = sequelize.define('User', {
     unique: true,
     validate: { isEmail: true }
   },
+  avatar: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   bank_account: {
     type: DataTypes.STRING,
     allowNull: true

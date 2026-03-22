@@ -13,7 +13,7 @@ export default function PropertyDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bidAmount, setBidAmount] = useState("");
-  const [bids, setBids] = useState<{ amount: string; bidTime: string; message: string }[]>([]);
+  const [bids, setBids] = useState<{ amount: string; bidTime: string; bidderId?: string; message: string }[]>([]);
   const [bidMessage, setBidMessage] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
   const [registering, setRegistering] = useState(false);
@@ -105,7 +105,7 @@ export default function PropertyDetailsPage() {
         const res = await fetch(`http://127.0.0.1:5000/api/bids/auction/${property.auction.id}`);
         if (res.ok) {
           const data = await res.json();
-          setBids(data.map((b: any) => ({ amount: b.amount, bidTime: b.bidTime, message: '' })));
+          setBids(data.map((b: any) => ({ amount: b.amount, bidTime: b.bidTime, bidderId: b.bidderId, message: '' })));
         }
       } catch { }
     };
@@ -273,8 +273,9 @@ export default function PropertyDetailsPage() {
                 </div>
               </div>
 
-              {/* Deposit section */}
-              {property.auction && user?.role === 'CUSTOMER' && !isRegistered && (
+              {/* Deposit section - only show if auction is ACTIVE or UPCOMING and user is not registered */}
+              {property.auction && user?.role === 'CUSTOMER' && !isRegistered && 
+               (property.auction.status === 'ACTIVE' || property.auction.status === 'UPCOMING') && (
                 <div className="space-y-3 p-4 rounded-xl border border-yellow-200 bg-yellow-50">
                   <p className="text-sm font-bold text-yellow-800">⚠️ Deposit Required</p>
                   <p className="text-xs text-yellow-700">
@@ -292,6 +293,14 @@ export default function PropertyDetailsPage() {
                   >
                     {registering ? t('processing') : `${t('payDeposit')} ($${Number(property.auction.depositAmount).toLocaleString()})`}
                   </Button>
+                </div>
+              )}
+
+              {/* Inform if auction is already ended or cancelled */}
+              {property.auction && (property.auction.status === 'COMPLETED' || property.auction.status === 'CANCELLED') && !isRegistered && (
+                <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
+                  <p className="text-sm text-gray-500 font-bold">{t('auctionEnded') || "This auction has already ended."}</p>
+                  <p className="text-xs text-gray-400 mt-1">{t('registrationsClosed') || "No longer accepting registrations."}</p>
                 </div>
               )}
 
@@ -364,12 +373,20 @@ export default function PropertyDetailsPage() {
             <div className="space-y-4 pt-6 mt-6 border-t border-border/50">
                 <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">{t('liveActivity')}</h3>
                 <div className="max-h-48 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                    {bids.length > 0 ? bids.map((bid, i) => (
-                        <div key={i} className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-3 duration-500">
-                            <span className="text-gray-500 font-medium">Bidder ****{Math.floor(Math.random() * 900) + 100}</span>
-                            <span className="font-bold text-primary">${parseFloat(bid.amount).toLocaleString()}</span>
-                        </div>
-                    )) : (
+                    {bids.length > 0 ? bids.map((bid, i) => {
+                        const getBidderHash = (id?: string) => {
+                          if (!id) return "???";
+                          let hash = 0;
+                          for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+                          return Math.abs(hash % 900) + 100;
+                        };
+                        return (
+                          <div key={i} className="flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-3 duration-500">
+                              <span className="text-gray-500 font-medium">Bidder ****{getBidderHash(bid.bidderId)}</span>
+                              <span className="font-bold text-primary">${parseFloat(bid.amount).toLocaleString()}</span>
+                          </div>
+                        );
+                    }) : (
                         <p className="text-xs text-center text-gray-400">{t('noBidsYet')}</p>
                     )}
                 </div>

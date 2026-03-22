@@ -142,7 +142,7 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
-    res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
+    res.json({ token, user: { id: user.id, username: user.username, name: user.name, avatar: user.avatar, role: user.role } });
   } catch (error) {
     res.status(500).json({ message: 'Login failed. Please try again later.' });
   }

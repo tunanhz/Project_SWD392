@@ -241,6 +241,7 @@
     "type": "Type",
     "loginToDeposit": "Please log in to pay the deposit and participate.",
     "auctionEnded": "This auction has ended.",
+    "registrationsClosed": "Registrations are now closed.",
     "errBidHigherStarting": "Bid must be higher than starting price ({price})",
     "errBidHigherCurrent": "Bid must be higher than current highest ({price})",
     "errPropertyNotFound": "Property not found",
@@ -300,5 +301,20 @@
     "transactions": "Transactions",
     "complaints": "Complaints",
     "dashboard": "Dashboard"
+  },
+  "Profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and avatar.",
+    "changeAvatar": "Change Avatar",
+    "personalInfo": "Personal Information",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "emailHint": "Email address cannot be changed.",
+    "username": "Username",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "updateSuccess": "Profile updated successfully!",
+    "avatarSuccess": "Avatar updated successfully!"
   }
 }

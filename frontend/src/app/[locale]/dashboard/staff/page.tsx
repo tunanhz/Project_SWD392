@@ -3,6 +3,7 @@
 import Button from "@/components/ui/Button";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/navigation";
 
 export default function StaffDashboard() {
   const t = useTranslations("StaffApproval");
@@ -87,14 +88,11 @@ export default function StaffDashboard() {
                   <td className="px-6 py-4 font-mono">${Number(prop.startingPrice).toLocaleString()}</td>
                   <td className="px-6 py-4 text-gray-500">{prop.address}</td>
                   <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <Button variant="accent" size="sm" className="h-8" onClick={() => handleAction(prop.id, 'APPROVED')}>
-                        {t('approve')}
+                    <Link href={`/dashboard/staff/properties/${prop.id}`}>
+                      <Button variant="outline" size="sm" className="h-8 font-bold border-accent/20 text-accent hover:bg-accent/5">
+                        Xem chi tiết
                       </Button>
-                      <Button variant="outline" size="sm" className="h-8 border-red-200 text-red-600 hover:bg-red-50" onClick={() => handleAction(prop.id, 'REJECTED')}>
-                        {t('reject')}
-                      </Button>
-                    </div>
+                    </Link>
                   </td>
                 </tr>
               ))}

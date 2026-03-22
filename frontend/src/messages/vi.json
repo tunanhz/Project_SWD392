@@ -241,6 +241,7 @@
     "type": "Loại",
     "loginToDeposit": "Vui lòng đăng nhập để đặt cọc và tham gia.",
     "auctionEnded": "Phiên đấu giá đã kết thúc.",
+    "registrationsClosed": "Hệ thống đã ngừng nhận đăng ký.",
     "errBidHigherStarting": "Giá đặt phải cao hơn giá khởi điểm ({price})",
     "errBidHigherCurrent": "Giá đặt phải cao hơn giá cao nhất hiện tại ({price})",
     "errPropertyNotFound": "Không tìm thấy bất động sản",
@@ -298,5 +299,20 @@
     "noComplaints": "Không tìm thấy khiếu nại nào.",
     "respondSuccess": "Đã gửi phản hồi thành công!",
     "fileComplaint": "Gửi Khiếu nại"
+  },
+  "Profile": {
+    "title": "Hồ Sơ Của Tôi",
+    "subtitle": "Quản lý thông tin cá nhân và ảnh đại diện.",
+    "changeAvatar": "Đổi Ảnh",
+    "personalInfo": "Thông tin cá nhân",
+    "name": "Họ và Tên",
+    "phone": "Số điện thoại",
+    "email": "Địa chỉ Email",
+    "emailHint": "Không thể thay đổi địa chỉ email.",
+    "username": "Tên đăng nhập",
+    "saving": "Đang lưu...",
+    "saveChanges": "Lưu Thay Đổi",
+    "updateSuccess": "Cập nhật hồ sơ thành công!",
+    "avatarSuccess": "Cập nhật ảnh đại diện thành công!"
   }
 }

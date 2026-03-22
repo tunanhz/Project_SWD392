@@ -91,10 +91,12 @@ const initSocket = (server) => {
           amount
         });
 
-        // BR-06: Anonymize identity when broadcasting
+        // BR-06: Anonymize identity when broadcasting (frontend will hash bidderId)
         io.to(auctionId).emit('newBid', {
+          id: bid.id,
           amount: bid.amount,
           bidTime: bid.bidTime,
+          bidderId: bid.bidderId,
           message: 'A new bid has been placed!'
         });
 

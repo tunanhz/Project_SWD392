@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
@@ -16,11 +16,22 @@ export default function CreateComplaintModal({ auctionId, isOpen, onClose, onSuc
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [formErrors, setFormErrors] = useState<any>({});
 
   if (!isOpen) return null;
 
+  const validateForm = () => {
+    const errors: any = {};
+    if (!subject || subject.trim().length < 5) errors.subject = "Vui lòng nhập chủ đề ít nhất 5 ký tự (Subject min 5 chars)";
+    if (!description || description.trim().length < 20) errors.description = "Vui lòng nhập mô tả ít nhất 20 ký tự (Description min 20 chars)";
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     setSubmitting(true);
     setError("");
 
@@ -47,6 +58,7 @@ export default function CreateComplaintModal({ auctionId, isOpen, onClose, onSuc
 
       setSubject("");
       setDescription("");
+      setFormErrors({});
       onSuccess();
     } catch (err: any) {
       setError(err.message);
@@ -72,23 +84,23 @@ export default function CreateComplaintModal({ auctionId, isOpen, onClose, onSuc
             <label className="text-sm font-bold text-primary uppercase tracking-wider">Subject</label>
             <input 
               type="text" 
-              required 
               placeholder="Briefly describe the issue"
-              className="w-full h-12 rounded-xl border border-border/50 bg-background px-4 text-sm focus:ring-2 focus:ring-accent outline-none font-medium"
+              className={`w-full h-12 rounded-xl border ${formErrors.subject ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background px-4 text-sm focus:ring-2 outline-none font-medium`}
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(e) => { setSubject(e.target.value); setFormErrors({...formErrors, subject: undefined}); }}
             />
+            {formErrors.subject && <p className="text-red-500 text-xs font-medium mt-1">{formErrors.subject}</p>}
           </div>
           
           <div className="space-y-2">
             <label className="text-sm font-bold text-primary uppercase tracking-wider">Detailed Description</label>
             <textarea 
-              required 
               placeholder="Provide as much detail as possible about your complaint..."
-              className="w-full h-32 rounded-xl border border-border/50 bg-background px-4 py-3 text-sm focus:ring-2 focus:ring-accent outline-none resize-none font-medium"
+              className={`w-full h-32 rounded-xl border ${formErrors.description ? 'border-red-500 focus:ring-red-500' : 'border-border/50 focus:ring-accent'} bg-background px-4 py-3 text-sm focus:ring-2 outline-none resize-none font-medium`}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => { setDescription(e.target.value); setFormErrors({...formErrors, description: undefined}); }}
             />
+            {formErrors.description && <p className="text-red-500 text-xs font-medium mt-1">{formErrors.description}</p>}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
