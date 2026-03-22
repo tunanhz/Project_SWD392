@@ -22,6 +22,10 @@ const Auction = sequelize.define('Auction', {
   depositAmount: {
     type: DataTypes.DECIMAL(15, 2),
     allowNull: false
+  },
+  winnerId: {
+    type: DataTypes.UUID,
+    allowNull: true
   }
 }, {
   timestamps: true

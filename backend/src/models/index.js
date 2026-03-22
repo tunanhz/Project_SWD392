@@ -49,6 +49,10 @@ ActivityLog.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasMany(VerificationToken, { foreignKey: 'userId', as: 'tokens', onDelete: 'CASCADE' });
 VerificationToken.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// 11. Auction - User (Winner)
+User.hasMany(Auction, { foreignKey: 'winnerId', as: 'wonAuctions', onDelete: 'SET NULL' });
+Auction.belongsTo(User, { foreignKey: 'winnerId', as: 'winner' });
+
 module.exports = {
   User,
   Property,

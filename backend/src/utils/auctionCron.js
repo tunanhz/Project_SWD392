@@ -43,6 +43,9 @@ const initCron = () => {
         if (winningBid) {
           console.log(`Winner of auction ${auction.id}: ${winningBid.bidder.username} with bid $${winningBid.amount}`);
           
+          auction.winnerId = winningBid.bidder.id;
+          await auction.save();
+
           // Update property status to SOLD
           const property = await Property.findByPk(auction.propertyId);
           if (property) {

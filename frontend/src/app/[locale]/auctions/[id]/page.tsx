@@ -33,7 +33,7 @@ export default function PropertyDetailsPage() {
         const data = await response.json();
         setProperty(data);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message === "Property not found" ? t('errPropertyNotFound') : err.message);
       } finally {
         setLoading(false);
       }
@@ -58,7 +58,17 @@ export default function PropertyDetailsPage() {
     });
 
     socket.on("error", (err) => {
-      setBidMessage(`Error: ${err.message}`);
+      let msg = err.message;
+      if (typeof msg === 'string') {
+        if (msg.startsWith("Bid must be higher than starting price")) {
+          const priceStr = msg.match(/\(\$([\d,]+(\.\d+)?)\)/)?.[1] || "";
+          msg = t('errBidHigherStarting', { price: `$${priceStr}` });
+        } else if (msg.startsWith("Bid must be higher than current highest")) {
+          const priceStr = msg.match(/\(\$([\d,]+(\.\d+)?)\)/)?.[1] || "";
+          msg = t('errBidHigherCurrent', { price: `$${priceStr}` });
+        }
+      }
+      setBidMessage(msg);
     });
 
     return () => {
@@ -115,9 +125,10 @@ export default function PropertyDetailsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Registration failed');
       setIsRegistered(true);
-      setRegMessage("Registered & deposit paid successfully!");
+      setRegMessage(t('successRegistration'));
     } catch (err: any) {
-      setRegMessage(`Error: ${err.message}`);
+      const msg = err.message === 'Registration failed' ? t('errRegistrationFailed') : err.message;
+      setRegMessage(`Error: ${msg}`);
     } finally {
       setRegistering(false);
     }

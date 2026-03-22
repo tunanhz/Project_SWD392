@@ -191,7 +191,12 @@
     "area": "Area",
     "type": "Type",
     "loginToDeposit": "Please log in to pay the deposit and participate.",
-    "auctionEnded": "This auction has ended."
+    "auctionEnded": "This auction has ended.",
+    "errBidHigherStarting": "Bid must be higher than starting price ({price})",
+    "errBidHigherCurrent": "Bid must be higher than current highest ({price})",
+    "errPropertyNotFound": "Property not found",
+    "errRegistrationFailed": "Registration failed",
+    "successRegistration": "Registered & deposit paid successfully!"
   },
   "Sidebar": {
     "overview": "Overview",

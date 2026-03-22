@@ -1,4 +1,4 @@
-const { Bid, Auction, Property, User } = require('../models');
+const { Bid, Auction, Property, User, Payment } = require('../models');
 
 const getBidsByAuction = async (req, res) => {
   try {
@@ -28,6 +28,10 @@ const getMyBids = async (req, res) => {
               model: Property,
               as: 'property',
               attributes: ['title', 'address', 'startingPrice']
+            },
+            {
+              model: Payment,
+              as: 'payment'
             }
           ]
         }

@@ -191,7 +191,12 @@
     "area": "Diện tích",
     "type": "Loại",
     "loginToDeposit": "Vui lòng đăng nhập để đặt cọc và tham gia.",
-    "auctionEnded": "Phiên đấu giá đã kết thúc."
+    "auctionEnded": "Phiên đấu giá đã kết thúc.",
+    "errBidHigherStarting": "Giá đặt phải cao hơn giá khởi điểm ({price})",
+    "errBidHigherCurrent": "Giá đặt phải cao hơn giá cao nhất hiện tại ({price})",
+    "errPropertyNotFound": "Không tìm thấy bất động sản",
+    "errRegistrationFailed": "Đăng ký thất bại",
+    "successRegistration": "Đăng ký và nạp tiền cọc thành công!"
   },
   "Sidebar": {
     "overview": "Tổng quan",

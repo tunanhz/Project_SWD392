@@ -7,8 +7,11 @@ export default function MyBidsPage() {
   const t = useTranslations("MyBids");
   const [bids, setBids] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [user, setUser] = useState<any>(null);
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+
     const fetchBids = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -26,6 +29,25 @@ export default function MyBidsPage() {
     };
     fetchBids();
   }, []);
+
+  const handleCheckout = async (auctionId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:5000/api/payments/checkout/${auctionId}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(t('checkoutSuccess') || "Payment successful! Property ownership transferred.");
+        window.location.reload();
+      } else {
+        alert(data.error || "Checkout failed");
+      }
+    } catch (err) {
+      alert("Error processing checkout");
+    }
+  };
 
   if (loading) return (
     <div className="space-y-4 animate-pulse">
@@ -55,6 +77,7 @@ export default function MyBidsPage() {
                 <th className="px-6 py-4">{t('yourBid')}</th>
                 <th className="px-6 py-4">{t('auctionStatus')}</th>
                 <th className="px-6 py-4">{t('bidTime')}</th>
+                <th className="px-6 py-4 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-border/20">
@@ -77,6 +100,27 @@ export default function MyBidsPage() {
                   </td>
                   <td className="px-6 py-4 text-gray-500 font-medium">
                     {new Date(bid.bidTime).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {bid.auction?.status === 'COMPLETED' && bid.auction?.winnerId === user?.id && (
+                      bid.auction.payment ? (
+                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 drop-shadow-sm inline-block">
+                          {t('paid') || 'Paid & Transferred'}
+                        </span>
+                      ) : (
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-[10px] text-amber-600 font-bold uppercase tracking-wider animate-pulse">
+                            You Won!
+                          </span>
+                          <button 
+                            onClick={() => handleCheckout(bid.auction.id)}
+                            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold rounded-xl shadow-lg hover:shadow-amber-500/30 hover:-translate-y-0.5 transition-all"
+                          >
+                            {t('checkoutBtn') || 'Pay Balance'}
+                          </button>
+                        </div>
+                      )
+                    )}
                   </td>
                 </tr>
               ))}
