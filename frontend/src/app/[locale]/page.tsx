@@ -37,6 +37,7 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
 
 export default function Home() {
   const t = useTranslations("Landing");
+  const tf = useTranslations("Footer");
   const [stats, setStats] = useState({ sold: 0, active: 0, bidders: 0, properties: 0 });
   const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
 
@@ -90,7 +91,7 @@ export default function Home() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-5 py-2 rounded-full text-amber-400 text-sm font-semibold backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-            {stats.active > 0 ? `${stats.active} ${t('activeAuctions')}` : 'Premium Platform'}
+            {stats.active > 0 ? `${stats.active} ${t('activeAuctions')}` : t('premiumPlatform')}
           </div>
 
           {/* Main heading */}
@@ -162,7 +163,7 @@ export default function Home() {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
           <div className="container px-4 mx-auto">
             <div className="text-center mb-16 space-y-4">
-              <p className="text-amber-600 font-bold text-sm uppercase tracking-[0.2em]">Featured</p>
+              <p className="text-amber-600 font-bold text-sm uppercase tracking-[0.2em]">{t('featured')}</p>
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
                 {t('activeAuctions')}
               </h2>
@@ -192,7 +193,7 @@ export default function Home() {
                       <div className="absolute top-4 left-4">
                         <span className="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                          LIVE
+                          {t('live')}
                         </span>
                       </div>
                       {/* Price overlay */}
@@ -216,16 +217,16 @@ export default function Home() {
                         {auction.property?.address}
                       </div>
                       <div className="flex gap-4 text-xs text-slate-400 font-semibold pt-2 border-t border-slate-100">
-                        {auction.property?.beds && <span>{auction.property.beds} Beds</span>}
-                        {auction.property?.baths && <span>{auction.property.baths} Baths</span>}
-                        {auction.property?.area && <span>{auction.property.area} m²</span>}
+                        {auction.property?.beds && <span>{auction.property.beds} {t('beds')}</span>}
+                        {auction.property?.baths && <span>{auction.property.baths} {t('baths')}</span>}
+                        {auction.property?.area && <span>{auction.property.area} {t('m2')}</span>}
                       </div>
                       <div className="flex items-center justify-between pt-2">
                         <div className="text-xs text-slate-400">
-                          <span className="text-amber-600 font-bold">{auction.bids?.length || 0} bids</span>
+                          <span className="text-amber-600 font-bold">{auction.bids?.length || 0} {t('bidsCount')}</span>
                         </div>
                         <span className="text-amber-600 font-bold text-sm group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                          View →
+                          {t('view')} →
                         </span>
                       </div>
                     </div>
@@ -249,16 +250,16 @@ export default function Home() {
       <section className="py-24 bg-slate-50">
         <div className="container px-4 mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <p className="text-amber-600 font-bold text-sm uppercase tracking-[0.2em]">Simple Process</p>
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">How It Works</h2>
+            <p className="text-amber-600 font-bold text-sm uppercase tracking-[0.2em]">{t('simpleProcess')}</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">{t('howItWorks')}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
             {[
-              { icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z', title: 'Browse', desc: 'Explore verified premium properties' },
-              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: 'Register', desc: 'Create account & verify identity' },
-              { icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z', title: 'Deposit', desc: 'Pay deposit to join auction' },
-              { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'Bid & Win', desc: 'Place bids in real-time' },
+              { icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z', title: t('step1Title'), desc: t('step1Desc') },
+              { icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', title: t('step2Title'), desc: t('step2Desc') },
+              { icon: 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z', title: t('step3Title'), desc: t('step3Desc') },
+              { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: t('step4Title'), desc: t('step4Desc') },
             ].map((step, i) => (
               <div key={i} className="relative text-center group">
                 {i < 3 && (
@@ -286,20 +287,20 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-6xl mx-auto items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <p className="text-amber-600 font-bold text-sm uppercase tracking-[0.2em]">Why Choose Us</p>
+                <p className="text-amber-600 font-bold text-sm uppercase tracking-[0.2em]">{t('whyChooseUs')}</p>
                 <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                  Trusted by Property Investors Worldwide
+                  {t('trustedBy')}
                 </h2>
                 <p className="text-lg text-slate-500 leading-relaxed">
-                  Our platform ensures complete transparency, legal compliance, and secure transactions for every auction.
+                  {t('whyUsDesc')}
                 </p>
               </div>
               <div className="space-y-6">
                 {[
-                  { title: 'Verified Properties', desc: 'Every property undergoes rigorous legal verification before listing.' },
-                  { title: 'Real-time Bidding', desc: 'WebSocket-powered live auctions with instant bid updates.' },
-                  { title: 'Secure Deposits', desc: 'Your deposit is protected and fully refundable if you don\'t win.' },
-                  { title: 'Anonymous Bidding', desc: 'Your identity is protected — only bid amounts are visible.' },
+                  { title: t('feature1Title'), desc: t('feature1Desc') },
+                  { title: t('feature2Title'), desc: t('feature2Desc') },
+                  { title: t('feature3Title'), desc: t('feature3Desc') },
+                  { title: t('feature4Title'), desc: t('feature4Desc') },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 group">
                     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 transition-colors duration-300">
@@ -321,7 +322,7 @@ export default function Home() {
               <div className="absolute -top-6 -right-6 w-72 h-72 bg-amber-500/5 rounded-full blur-2xl"></div>
               <div className="relative grid grid-cols-2 gap-4">
                 {[
-                  { value: stats.properties, label: 'Total Properties', icon: '🏠', bg: 'from-amber-50 to-orange-50' },
+                  { value: stats.properties, label: t('totalProperties'), icon: '🏠', bg: 'from-amber-50 to-orange-50' },
                   { value: stats.active, label: t('activeAuctions'), icon: '🔴', bg: 'from-emerald-50 to-teal-50' },
                   { value: stats.bidders, label: t('registeredBidders'), icon: '👥', bg: 'from-blue-50 to-indigo-50' },
                   { value: 99, label: t('trustScore') + ' %', icon: '🛡️', bg: 'from-purple-50 to-pink-50' },
@@ -349,10 +350,10 @@ export default function Home() {
 
         <div className="container px-4 mx-auto relative z-10 text-center space-y-8">
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight max-w-3xl mx-auto">
-            Ready to Start Bidding?
+            {t('readyToBid')}
           </h2>
           <p className="text-lg text-slate-400 max-w-xl mx-auto">
-            Join thousands of investors who trust our platform for premium real estate auctions.
+            {t('readyToBidDesc')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link href="/register">
@@ -375,13 +376,13 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
               <DtaLogo className="w-12 h-12 drop-shadow-lg" />
-              <span className="text-white font-black text-2xl tracking-tight">Auctions</span>
+              <span className="text-white font-black text-2xl tracking-tight">{tf('auctions')}</span>
             </div>
-            <p className="text-slate-600 text-sm">© 2026 Duong Tuan Anh Auctions. All rights reserved.</p>
+            <p className="text-slate-600 text-sm">{tf('copyright')}</p>
             <div className="flex gap-6 text-slate-500 text-sm">
-              <span className="hover:text-amber-500 cursor-pointer transition-colors">Privacy</span>
-              <span className="hover:text-amber-500 cursor-pointer transition-colors">Terms</span>
-              <span className="hover:text-amber-500 cursor-pointer transition-colors">Support</span>
+              <span className="hover:text-amber-500 cursor-pointer transition-colors">{tf('privacy')}</span>
+              <span className="hover:text-amber-500 cursor-pointer transition-colors">{tf('terms')}</span>
+              <span className="hover:text-amber-500 cursor-pointer transition-colors">{tf('support')}</span>
             </div>
           </div>
         </div>

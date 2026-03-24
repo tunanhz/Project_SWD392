@@ -196,6 +196,7 @@ const getTransactions = async (req, res) => {
   try {
     const payments = await Payment.findAll({
       include: [
+        { model: User, as: 'user', attributes: ['id', 'username', 'email'] },
         { 
           model: Auction, 
           as: 'auction',

@@ -19,7 +19,39 @@
     "propertiesSold": "Properties Sold",
     "activeAuctions": "Active Auctions",
     "registeredBidders": "Registered Bidders",
-    "trustScore": "Trust Score"
+    "trustScore": "Trust Score",
+    "premiumPlatform": "Premium Platform",
+    "featured": "Featured",
+    "live": "LIVE",
+    "beds": "Beds",
+    "baths": "Baths",
+    "m2": "m²",
+    "bidsCount": "bids",
+    "view": "View",
+    "howItWorks": "How It Works",
+    "simpleProcess": "Simple Process",
+    "step1Title": "Browse",
+    "step1Desc": "Explore verified premium properties",
+    "step2Title": "Register",
+    "step2Desc": "Create account & verify identity",
+    "step3Title": "Deposit",
+    "step3Desc": "Pay deposit to join auction",
+    "step4Title": "Bid & Win",
+    "step4Desc": "Place bids in real-time",
+    "whyChooseUs": "Why Choose Us",
+    "trustedBy": "Trusted by Property Investors Worldwide",
+    "whyUsDesc": "Our platform ensures complete transparency, legal compliance, and secure transactions for every auction.",
+    "feature1Title": "Verified Properties",
+    "feature1Desc": "Every property undergoes rigorous legal verification before listing.",
+    "feature2Title": "Real-time Bidding",
+    "feature2Desc": "WebSocket-powered live auctions with instant bid updates.",
+    "feature3Title": "Secure Deposits",
+    "feature3Desc": "Your deposit is protected and fully refundable if you don't win.",
+    "feature4Title": "Anonymous Bidding",
+    "feature4Desc": "Your identity is protected — only bid amounts are visible.",
+    "totalProperties": "Total Properties",
+    "readyToBid": "Ready to Start Bidding?",
+    "readyToBidDesc": "Join thousands of investors who trust our platform for premium real estate auctions."
   },
   "Dashboard": {
     "welcome": "Welcome",
@@ -316,5 +348,12 @@
     "saveChanges": "Save Changes",
     "updateSuccess": "Profile updated successfully!",
     "avatarSuccess": "Avatar updated successfully!"
+  },
+  "Footer": {
+    "auctions": "Auctions",
+    "copyright": "© 2026 Duong Tuan Anh Auctions. All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "support": "Support"
   }
 }

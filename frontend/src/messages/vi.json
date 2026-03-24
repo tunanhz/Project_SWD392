@@ -19,7 +19,39 @@
     "propertiesSold": "Đã bán",
     "activeAuctions": "Đấu giá đang diễn ra",
     "registeredBidders": "Người tham gia",
-    "trustScore": "Độ tin cậy"
+    "trustScore": "Độ tin cậy",
+    "premiumPlatform": "Nền tảng Cao cấp",
+    "featured": "Nổi bật",
+    "live": "TRỰC TIẾP",
+    "beds": "Phòng ngủ",
+    "baths": "Phòng tắm",
+    "m2": "m²",
+    "bidsCount": "lượt đặt giá",
+    "view": "Xem",
+    "howItWorks": "Quy trình hoạt động",
+    "simpleProcess": "Quy trình đơn giản",
+    "step1Title": "Khám phá",
+    "step1Desc": "Tìm hiểu các bất động sản cao cấp đã được xác minh",
+    "step2Title": "Đăng ký",
+    "step2Desc": "Tạo tài khoản và xác minh danh tính",
+    "step3Title": "Đặt cọc",
+    "step3Desc": "Nạp tiền cọc để tham gia đấu giá",
+    "step4Title": "Đấu giá & Thắng",
+    "step4Desc": "Đặt giá trực tiếp trong thời gian thực",
+    "whyChooseUs": "Tại sao chọn chúng tôi",
+    "trustedBy": "Được tin tưởng bởi các nhà đầu tư bất động sản toàn thế giới",
+    "whyUsDesc": "Nền tảng của chúng tôi đảm bảo tính minh bạch hoàn toàn, tuân thủ pháp lý và giao dịch an toàn cho mọi phiên đấu giá.",
+    "feature1Title": "Bất động sản đã xác minh",
+    "feature1Desc": "Mọi tài sản đều trải qua quá trình kiểm tra pháp lý nghiêm ngặt trước khi đăng niêm yết.",
+    "feature2Title": "Đấu giá thời gian thực",
+    "feature2Desc": "Các phiên đấu giá trực tiếp được hỗ trợ bởi WebSocket với cập nhật giá thầu tức thì.",
+    "feature3Title": "Tiền cọc an toàn",
+    "feature3Desc": "Tiền đặt cọc của bạn được bảo vệ và hoàn trả đầy đủ nếu bạn không thắng cuộc.",
+    "feature4Title": "Đấu giá ẩn danh",
+    "feature4Desc": "Danh tính của bạn được bảo mật — chỉ hiển thị số tiền đặt giá.",
+    "totalProperties": "Tổng tài sản",
+    "readyToBid": "Sẵn sàng tham gia đấu giá?",
+    "readyToBidDesc": "Tham gia cùng hàng ngàn nhà đầu tư tin dùng nền tảng của chúng tôi để đấu giá bất động sản cao cấp."
   },
   "Dashboard": {
     "welcome": "Chào mừng",
@@ -314,5 +346,12 @@
     "saveChanges": "Lưu Thay Đổi",
     "updateSuccess": "Cập nhật hồ sơ thành công!",
     "avatarSuccess": "Cập nhật ảnh đại diện thành công!"
+  },
+  "Footer": {
+    "auctions": "Đấu giá",
+    "copyright": "© 2026 Duong Tuan Anh Auctions. Bảo lưu mọi quyền.",
+    "privacy": "Chính sách bảo mật",
+    "terms": "Điều khoản",
+    "support": "Hỗ trợ"
   }
 }

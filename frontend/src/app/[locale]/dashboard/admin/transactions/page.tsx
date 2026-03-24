@@ -105,7 +105,7 @@ export default function AdminTransactionsPage() {
               {data?.payments?.map((payment: any) => (
                 <tr key={payment.id} className="hover:bg-accent/5 transition-colors">
                   <td className="px-6 py-4 font-mono text-xs">{payment.transactionId || payment.id}</td>
-                  <td className="px-6 py-4 font-medium">{payment.auction?.winner?.username || 'Unknown'}</td>
+                  <td className="px-6 py-4 font-medium">{payment.user?.username || 'Unknown'}</td>
                   <td className="px-6 py-4 text-primary font-bold">{payment.auction?.property?.title || 'Unknown Property'}</td>
                   <td className="px-6 py-4 font-mono font-bold text-green-600">${parseFloat(payment.amount).toLocaleString()}</td>
                   <td className="px-6 py-4 text-xs font-bold text-gray-500">{payment.paymentMethod}</td>
