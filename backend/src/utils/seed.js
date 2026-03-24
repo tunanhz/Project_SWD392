@@ -1,180 +1,123 @@
 const bcrypt = require('bcryptjs');
 const sequelize = require('../config/database');
-const { User, Property, Auction, Bid, Deposit, PropertyImage } = require('../models');
+const { 
+  User, Property, Auction, Bid, Deposit, Payment, 
+  Notification, Complaint, LegalDocument, ActivityLog, PropertyImage, Report
+} = require('../models');
 
 const seedData = async () => {
   try {
-    await sequelize.sync({ force: true }); // Warning: This resets the DB
-    console.log('Database synced. Seeding started...');
+    await sequelize.sync({ force: true });
+    console.log('🚀 Database synced. Seeding comprehensive test data started...');
 
     const password = await bcrypt.hash('password123', 10);
 
     // ──────────── 1. USERS ────────────
     const admin = await User.create({
-      name: 'Nguyen Van Admin',
-      username: 'admin_user',
-      email: 'admin@auction.com',
-      phone: '0901000001',
-      password,
-      role: 'ADMIN',
-      isVerified: true
+      name: 'Nguyen Van Admin', username: 'admin_user', email: 'admin@auction.com',
+      phone: '0901000001', password, role: 'ADMIN', isVerified: true, bank_account: 'VCA-123456789'
     });
 
     const staff = await User.create({
-      name: 'Tran Thi Staff',
-      username: 'staff_user',
-      email: 'staff@auction.com',
-      phone: '0901000002',
-      password,
-      role: 'STAFF',
-      isVerified: true
+      name: 'Tran Thi Staff', username: 'staff_user', email: 'staff@auction.com',
+      phone: '0901000002', password, role: 'STAFF', isVerified: true, bank_account: 'VCA-987654321'
     });
 
     const owner1 = await User.create({
-      name: 'Le Van Owner',
-      username: 'owner_user',
-      email: 'owner@auction.com',
-      phone: '0901000003',
-      password,
-      role: 'OWNER',
-      isVerified: true
+      name: 'Le Van Owner', username: 'owner_user', email: 'owner@auction.com',
+      phone: '0901000003', password, role: 'OWNER', isVerified: true, bank_account: 'OWN-111111111'
     });
 
     const owner2 = await User.create({
-      name: 'Pham Thi Lan',
-      username: 'owner_lan',
-      email: 'lan@auction.com',
-      phone: '0901000004',
-      password,
-      role: 'OWNER',
-      isVerified: true
+      name: 'Pham Thi Lan', username: 'owner_lan', email: 'lan@auction.com',
+      phone: '0901000004', password, role: 'OWNER', isVerified: true, bank_account: 'OWN-222222222'
     });
 
     const customer1 = await User.create({
-      name: 'Vo Minh Bidder',
-      username: 'customer_user',
-      email: 'customer@auction.com',
-      phone: '0901000005',
-      password,
-      role: 'CUSTOMER',
-      isVerified: true
+      name: 'Vo Minh Bidder', username: 'customer_user', email: 'customer@auction.com',
+      phone: '0901000005', password, role: 'CUSTOMER', isVerified: true, bank_account: 'CUS-333333333'
     });
 
     const customer2 = await User.create({
-      name: 'Hoang Anh Duc',
-      username: 'customer_duc',
-      email: 'duc@auction.com',
-      phone: '0901000006',
-      password,
-      role: 'CUSTOMER',
-      isVerified: true
+      name: 'Hoang Anh Duc', username: 'customer_duc', email: 'duc@auction.com',
+      phone: '0901000006', password, role: 'CUSTOMER', isVerified: true, bank_account: 'CUS-444444444'
     });
 
     const customer3 = await User.create({
-      name: 'Nguyen Thi Mai',
-      username: 'customer_mai',
-      email: 'mai@auction.com',
-      phone: '0901000007',
-      password,
-      role: 'CUSTOMER',
-      isVerified: true
+      name: 'Nguyen Thi Mai', username: 'customer_mai', email: 'mai@auction.com',
+      phone: '0901000007', password, role: 'CUSTOMER', isVerified: true, bank_account: 'CUS-555555555'
     });
 
-    console.log('✓ 7 users created.');
+    console.log('✅ 7 Users created.');
 
     // ──────────── 2. PROPERTIES ────────────
     const prop1 = await Property.create({
-      title: 'Modern Sunset Villa',
-      description: 'Biệt thự hiện đại với view biển tuyệt đẹp, 3 tầng, hồ bơi riêng, sân vườn rộng 200m². Nội thất cao cấp nhập khẩu từ Ý.',
-      address: 'Đường Trần Não, Quận 2, TP.HCM',
-      startingPrice: 2500000,
-      area: 450,
-      beds: 5,
-      baths: 4,
-      propertyType: 'Villa',
-      status: 'APPROVED',
-      ownerId: owner1.id
+      title: 'Modern Sunset Villa', description: 'Biệt thự hiện đại với view biển tuyệt đẹp, hồ bơi riêng.',
+      address: 'Đường Trần Não, Quận 2, TP.HCM', startingPrice: 2500000000,
+      area: 450, beds: 5, baths: 4, propertyType: 'Villa', status: 'APPROVED', ownerId: owner1.id
     });
 
     const prop2 = await Property.create({
-      title: 'Skyline Penthouse',
-      description: 'Căn hộ penthouse tầng 35 tại trung tâm Quận 1, view toàn cảnh thành phố. Ban công rộng, phòng khách double-height.',
-      address: 'Đường Nguyễn Huệ, Quận 1, TP.HCM',
-      startingPrice: 1800000,
-      area: 220,
-      beds: 3,
-      baths: 3,
-      propertyType: 'Penthouse',
-      status: 'PENDING',
-      ownerId: owner1.id
+      title: 'Skyline Penthouse', description: 'Căn hộ penthouse tầng 35 tại trung tâm Quận 1.',
+      address: 'Đường Nguyễn Huệ, Quận 1, TP.HCM', startingPrice: 1800000000,
+      area: 220, beds: 3, baths: 3, propertyType: 'Penthouse', status: 'PENDING', ownerId: owner1.id
     });
 
     const prop3 = await Property.create({
-      title: 'Heritage French Mansion',
-      description: 'Biệt thự phong cách Pháp cổ điển, được xây dựng từ năm 1925 và phục chế hoàn toàn. Khu vườn rộng với cây xanh trăm tuổi.',
-      address: 'Đường Phạm Ngọc Thạch, Quận 3, TP.HCM',
-      startingPrice: 4200000,
-      area: 800,
-      beds: 7,
-      baths: 6,
-      propertyType: 'Villa',
-      status: 'APPROVED',
-      ownerId: owner1.id
+      title: 'Heritage French Mansion', description: 'Biệt thự phong cách Pháp cổ điển, phục chế hoàn toàn.',
+      address: 'Đường Phạm Ngọc Thạch, Quận 3, TP.HCM', startingPrice: 4200000000,
+      area: 800, beds: 7, baths: 6, propertyType: 'Villa', status: 'APPROVED', ownerId: owner1.id
     });
 
     const prop4 = await Property.create({
-      title: 'Riverside Luxury Apartment',
-      description: 'Căn hộ cao cấp ven sông Sài Gòn, tầng 22, view sông thoáng mát. Tiện ích nội khu đầy đủ: gym, hồ bơi, BBQ.',
-      address: 'Đường Nguyễn Hữu Cảnh, Bình Thạnh, TP.HCM',
-      startingPrice: 950000,
-      area: 110,
-      beds: 2,
-      baths: 2,
-      propertyType: 'Apartment',
-      status: 'APPROVED',
-      ownerId: owner2.id
+      title: 'Riverside Luxury Apartment', description: 'Căn hộ cao cấp ven sông Sài Gòn, tầng 22.',
+      address: 'Đường Nguyễn Hữu Cảnh, Bình Thạnh, TP.HCM', startingPrice: 950000000,
+      area: 110, beds: 2, baths: 2, propertyType: 'Apartment', status: 'APPROVED', ownerId: owner2.id
     });
 
     const prop5 = await Property.create({
-      title: 'Garden Townhouse',
-      description: 'Nhà phố liên kế có sân vườn, 4 tầng, thiết kế thông thoáng. Gần trường quốc tế, bệnh viện và trung tâm thương mại.',
-      address: 'Đường Lê Văn Việt, TP. Thủ Đức, TP.HCM',
-      startingPrice: 650000,
-      area: 180,
-      beds: 4,
-      baths: 3,
-      propertyType: 'House',
-      status: 'APPROVED',
-      ownerId: owner2.id
+      title: 'Garden Townhouse', description: 'Nhà phố liên kế có sân vườn, 4 tầng.',
+      address: 'Đường Lê Văn Việt, TP. Thủ Đức, TP.HCM', startingPrice: 650000000,
+      area: 180, beds: 4, baths: 3, propertyType: 'House', status: 'SOLD', ownerId: owner2.id
     });
 
     const prop6 = await Property.create({
-      title: 'Eco Green Residence',
-      description: 'Căn hộ xanh thân thiện môi trường, sử dụng năng lượng mặt trời, vật liệu tái chế. Tầng thấp, view công viên.',
-      address: 'Đường Nguyễn Văn Linh, Quận 7, TP.HCM',
-      startingPrice: 520000,
-      area: 95,
-      beds: 2,
-      baths: 2,
-      propertyType: 'Apartment',
-      status: 'PENDING',
-      ownerId: owner2.id
+      title: 'Eco Green Residence', description: 'Căn hộ thân thiện môi trường, view công viên.',
+      address: 'Đường Nguyễn Văn Linh, Quận 7, TP.HCM', startingPrice: 500000000,
+      area: 100, beds: 2, baths: 1, propertyType: 'Apartment', status: 'REJECTED', ownerId: owner2.id
     });
 
     const prop7 = await Property.create({
-      title: 'Downtown Office Loft',
-      description: 'Căn hộ dạng loft tại trung tâm quận 1, phù hợp làm văn phòng hoặc studio. Trần cao 4.5m, thiết kế industrial.',
-      address: 'Đường Lý Tự Trọng, Quận 1, TP.HCM',
-      startingPrice: 780000,
-      area: 150,
-      beds: 1,
-      baths: 1,
-      propertyType: 'Apartment',
-      status: 'REJECTED',
-      ownerId: owner1.id
+      title: 'Downtown Office Loft', description: 'Căn hộ dạng loft tại trung tâm quận 1.',
+      address: 'Đường Lý Tự Trọng, Quận 1, TP.HCM', startingPrice: 780000000,
+      area: 150, beds: 1, baths: 1, propertyType: 'Apartment', status: 'WITHDRAWN', ownerId: owner1.id
     });
 
-    console.log('✓ 7 properties created.');
+    const prop8 = await Property.create({
+      title: 'Ocean View Villa', description: 'Biệt thự view biển tuyệt đẹp chưa lên sàn.',
+      address: 'Đường ven biển, Nha Trang', startingPrice: 3500000000,
+      area: 300, beds: 4, baths: 3, propertyType: 'Villa', status: 'APPROVED', ownerId: owner1.id
+    });
+
+    const prop9 = await Property.create({
+      title: 'City Center Condo', description: 'Căn hộ chung cư cao cấp ở trung tâm.',
+      address: 'Đường Hàm Nghi, Quận 1, TP.HCM', startingPrice: 1200000000,
+      area: 85, beds: 2, baths: 2, propertyType: 'Apartment', status: 'APPROVED', ownerId: owner2.id
+    });
+
+    const prop10 = await Property.create({
+      title: 'Suburban Family Home', description: 'Nhà cho gia đình ở vùng ngoại ô.',
+      address: 'Đường Nguyễn Oanh, Gò Vấp, TP.HCM', startingPrice: 850000000,
+      area: 120, beds: 3, baths: 2, propertyType: 'House', status: 'APPROVED', ownerId: owner1.id
+    });
+
+    const prop11 = await Property.create({
+      title: 'Luxury Estate', description: 'Khu đất rộng rãi với thiết kế cao cấp.',
+      address: 'Đường Mai Chí Thọ, Quận 2, TP.HCM', startingPrice: 5500000000,
+      area: 600, beds: 6, baths: 5, propertyType: 'Villa', status: 'APPROVED', ownerId: owner2.id
+    });
+
+    console.log('✅ 11 Properties created.');
 
     // ──────────── 3. PROPERTY IMAGES ────────────
     const imageData = [
@@ -185,101 +128,170 @@ const seedData = async () => {
       { propertyId: prop5.id, imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800' },
       { propertyId: prop6.id, imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=800' },
       { propertyId: prop7.id, imageUrl: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&q=80&w=800' },
+      { propertyId: prop8.id, imageUrl: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800' },
+      { propertyId: prop9.id, imageUrl: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=800' },
+      { propertyId: prop10.id, imageUrl: 'https://images.unsplash.com/photo-1512915922686-57c11dde9b6b?auto=format&fit=crop&q=80&w=800' },
+      { propertyId: prop11.id, imageUrl: 'https://images.unsplash.com/photo-1502672260266-1c1f51722e1e?auto=format&fit=crop&q=80&w=800' },
     ];
     for (const img of imageData) {
       await PropertyImage.create(img);
     }
-    console.log('✓ 7 property images created.');
+    console.log('✅ Property Images created.');
 
-    // ──────────── 4. AUCTIONS ────────────
+    // ──────────── 4. LEGAL DOCUMENTS ────────────
+    await LegalDocument.bulkCreate([
+      { propertyId: prop1.id, fileName: 'Sổ đỏ.pdf', filePath: '/uploads/so_do_prop1.pdf', fileType: 'pdf' },
+      { propertyId: prop3.id, fileName: 'Giấy phép xây dựng.pdf', filePath: '/uploads/gp_prop3.pdf', fileType: 'pdf' },
+    ]);
+    console.log('✅ Legal Documents created.');
+
+    // ──────────── 5. AUCTIONS ────────────
     const now = new Date();
-
-    // auction1: ACTIVE — ends in 48h
-    const auction1 = await Auction.create({
-      propertyId: prop1.id,
-      startTime: new Date(now.getTime() - 1000 * 60 * 60 * 2), // started 2h ago
-      endTime: new Date(now.getTime() + 1000 * 60 * 60 * 48),  // ends in 48h
-      depositAmount: 50000,
-      status: 'ACTIVE'
+    
+    // Active Auction
+    const auctionActive = await Auction.create({
+      propertyId: prop1.id, startTime: new Date(now.getTime() - 3600000), 
+      endTime: new Date(now.getTime() + 86400000), depositAmount: 50000000, status: 'ACTIVE'
     });
 
-    // auction2: ACTIVE — ends in 5h
-    const auction2 = await Auction.create({
-      propertyId: prop3.id,
-      startTime: new Date(now.getTime() - 1000 * 60 * 60 * 24), // started 24h ago
-      endTime: new Date(now.getTime() + 1000 * 60 * 60 * 5),    // ends in 5h
-      depositAmount: 80000,
-      status: 'ACTIVE'
+    // Upcoming Auction
+    const auctionUpcoming = await Auction.create({
+      propertyId: prop3.id, startTime: new Date(now.getTime() + 86400000), 
+      endTime: new Date(now.getTime() + 172800000), depositAmount: 100000000, status: 'UPCOMING'
     });
 
-    // auction3: UPCOMING — starts in 24h
-    const auction3 = await Auction.create({
-      propertyId: prop4.id,
-      startTime: new Date(now.getTime() + 1000 * 60 * 60 * 24), // starts in 24h
-      endTime: new Date(now.getTime() + 1000 * 60 * 60 * 72),   // ends in 72h
-      depositAmount: 20000,
-      status: 'UPCOMING'
+    // Completed Auction
+    const auctionCompleted = await Auction.create({
+      propertyId: prop5.id, startTime: new Date(now.getTime() - 172800000), 
+      endTime: new Date(now.getTime() - 86400000), depositAmount: 20000000, status: 'COMPLETED', winnerId: customer1.id
     });
 
-    // auction4: ACTIVE — ends in 12h
-    const auction4 = await Auction.create({
-      propertyId: prop5.id,
-      startTime: new Date(now.getTime() - 1000 * 60 * 60 * 6),  // started 6h ago
-      endTime: new Date(now.getTime() + 1000 * 60 * 60 * 12),   // ends in 12h
-      depositAmount: 15000,
-      status: 'ACTIVE'
+    // Paused Auction
+    const auctionPaused = await Auction.create({
+      propertyId: prop4.id, startTime: new Date(now.getTime() - 86400000), 
+      endTime: new Date(now.getTime() + 86400000), depositAmount: 15000000, status: 'PAUSED', pauseReason: 'Technical Issue'
     });
 
-    console.log('✓ 4 auctions created.');
+    // Cancelled Auction
+    const auctionCancelled = await Auction.create({
+      propertyId: prop2.id, startTime: new Date(now.getTime() - 86400000), 
+      endTime: new Date(now.getTime() + 86400000), depositAmount: 18000000, status: 'CANCELLED'
+    });
 
-    // ──────────── 5. DEPOSITS ────────────
-    // customer1 deposits for auction1, auction2
-    const dep1 = await Deposit.create({ userId: customer1.id, auctionId: auction1.id, amount: 50000, status: 'SUCCESS' });
-    const dep2 = await Deposit.create({ userId: customer1.id, auctionId: auction2.id, amount: 80000, status: 'SUCCESS' });
+    // Completed without Payment (To test 'Pay' in My Bids)
+    const auctionCompletedNoPayment = await Auction.create({
+      propertyId: prop9.id, startTime: new Date(now.getTime() - 172800000), 
+      endTime: new Date(now.getTime() - 86400000), depositAmount: 30000000, status: 'COMPLETED', winnerId: customer2.id
+    });
 
-    // customer2 deposits for auction1, auction4
-    const dep3 = await Deposit.create({ userId: customer2.id, auctionId: auction1.id, amount: 50000, status: 'SUCCESS' });
-    const dep4 = await Deposit.create({ userId: customer2.id, auctionId: auction4.id, amount: 15000, status: 'SUCCESS' });
+    const endMarch30 = new Date('2026-03-30T23:59:59Z');
+    
+    // Active Auctions ending Mar 30, 2026
+    const auctionActiveEnd30_1 = await Auction.create({
+      propertyId: prop10.id, startTime: new Date(now.getTime() - 3600000), 
+      endTime: endMarch30, depositAmount: 40000000, status: 'ACTIVE'
+    });
+    
+    const auctionActiveEnd30_2 = await Auction.create({
+      propertyId: prop11.id, startTime: new Date(now.getTime() - 7200000), 
+      endTime: endMarch30, depositAmount: 200000000, status: 'ACTIVE'
+    });
 
-    // customer3 deposits for auction2, auction4
-    const dep5 = await Deposit.create({ userId: customer3.id, auctionId: auction2.id, amount: 80000, status: 'SUCCESS' });
-    const dep6 = await Deposit.create({ userId: customer3.id, auctionId: auction4.id, amount: 15000, status: 'SUCCESS' });
+    console.log('✅ 8 Auctions created (including ending 30/3/2026).');
 
-    console.log('✓ 6 deposits created.');
+    // ──────────── 6. DEPOSITS ────────────
+    await Deposit.bulkCreate([
+      { userId: customer1.id, auctionId: auctionActive.id, amount: 50000000, status: 'SUCCESS' },
+      { userId: customer2.id, auctionId: auctionActive.id, amount: 50000000, status: 'SUCCESS' },
+      { userId: customer1.id, auctionId: auctionCompleted.id, amount: 20000000, status: 'SUCCESS' },
+      { userId: customer3.id, auctionId: auctionCompleted.id, amount: 20000000, status: 'REFUNDED' }, // Lost the auction, got refunded
+      { userId: customer2.id, auctionId: auctionUpcoming.id, amount: 100000000, status: 'PENDING' },
+      // Deposits for completed without payment
+      { userId: customer2.id, auctionId: auctionCompletedNoPayment.id, amount: 30000000, status: 'SUCCESS' }, // winner
+      { userId: customer1.id, auctionId: auctionCompletedNoPayment.id, amount: 30000000, status: 'REFUNDED' }, // loser
+      // Deposits for 30/3 auctions
+      { userId: customer3.id, auctionId: auctionActiveEnd30_1.id, amount: 40000000, status: 'SUCCESS' },
+      { userId: customer1.id, auctionId: auctionActiveEnd30_1.id, amount: 40000000, status: 'SUCCESS' },
+      { userId: customer2.id, auctionId: auctionActiveEnd30_2.id, amount: 200000000, status: 'SUCCESS' },
+      { userId: customer3.id, auctionId: auctionActiveEnd30_2.id, amount: 200000000, status: 'SUCCESS' },
+    ]);
+    console.log('✅ Deposits created.');
 
-    // ──────────── 6. BIDS ────────────
-    // Auction 1 bids (Modern Sunset Villa)
-    await Bid.create({ auctionId: auction1.id, bidderId: customer1.id, amount: 2550000, bidTime: new Date(now.getTime() - 1000 * 60 * 90) });
-    await Bid.create({ auctionId: auction1.id, bidderId: customer2.id, amount: 2600000, bidTime: new Date(now.getTime() - 1000 * 60 * 60) });
-    await Bid.create({ auctionId: auction1.id, bidderId: customer1.id, amount: 2700000, bidTime: new Date(now.getTime() - 1000 * 60 * 30) });
-    await Bid.create({ auctionId: auction1.id, bidderId: customer2.id, amount: 2750000, bidTime: new Date(now.getTime() - 1000 * 60 * 10) });
+    // ──────────── 7. BIDS ────────────
+    // Bids for active auction
+    await Bid.bulkCreate([
+      { auctionId: auctionActive.id, bidderId: customer1.id, amount: 2550000000, bidTime: new Date(now.getTime() - 1800000) },
+      { auctionId: auctionActive.id, bidderId: customer2.id, amount: 2600000000, bidTime: new Date(now.getTime() - 900000) },
+    ]);
 
-    // Auction 2 bids (Heritage French Mansion)
-    await Bid.create({ auctionId: auction2.id, bidderId: customer1.id, amount: 4300000, bidTime: new Date(now.getTime() - 1000 * 60 * 120) });
-    await Bid.create({ auctionId: auction2.id, bidderId: customer3.id, amount: 4450000, bidTime: new Date(now.getTime() - 1000 * 60 * 60) });
-    await Bid.create({ auctionId: auction2.id, bidderId: customer1.id, amount: 4500000, bidTime: new Date(now.getTime() - 1000 * 60 * 20) });
+    // Bids for completed auction
+    await Bid.bulkCreate([
+      { auctionId: auctionCompleted.id, bidderId: customer3.id, amount: 660000000, bidTime: new Date(now.getTime() - 120000000) },
+      { auctionId: auctionCompleted.id, bidderId: customer1.id, amount: 680000000, bidTime: new Date(now.getTime() - 100000000) },
+    ]);
 
-    // Auction 4 bids (Garden Townhouse)
-    await Bid.create({ auctionId: auction4.id, bidderId: customer2.id, amount: 680000, bidTime: new Date(now.getTime() - 1000 * 60 * 180) });
-    await Bid.create({ auctionId: auction4.id, bidderId: customer3.id, amount: 700000, bidTime: new Date(now.getTime() - 1000 * 60 * 90) });
-    await Bid.create({ auctionId: auction4.id, bidderId: customer2.id, amount: 720000, bidTime: new Date(now.getTime() - 1000 * 60 * 45) });
+    // Bids for completed auction without payment
+    await Bid.bulkCreate([
+      { auctionId: auctionCompletedNoPayment.id, bidderId: customer1.id, amount: 1250000000, bidTime: new Date(now.getTime() - 100000000) },
+      { auctionId: auctionCompletedNoPayment.id, bidderId: customer2.id, amount: 1300000000, bidTime: new Date(now.getTime() - 90000000) },
+    ]);
 
-    console.log('✓ 10 bids created.');
+    // Bids for Mar 30 active auctions
+    await Bid.bulkCreate([
+      { auctionId: auctionActiveEnd30_1.id, bidderId: customer1.id, amount: 860000000, bidTime: new Date(now.getTime() - 100000) },
+      { auctionId: auctionActiveEnd30_1.id, bidderId: customer3.id, amount: 880000000, bidTime: new Date(now.getTime() - 50000) },
+      { auctionId: auctionActiveEnd30_2.id, bidderId: customer2.id, amount: 5600000000, bidTime: new Date(now.getTime() - 150000) },
+    ]);
+    console.log('✅ Bids created.');
 
-    // ──────────── DONE ────────────
-    console.log('\n🎉 Seeding completed successfully!');
-    console.log('\nTest accounts (password: password123):');
+    // ──────────── 8. PAYMENTS ────────────
+    await Payment.create({
+      userId: customer1.id, auctionId: auctionCompleted.id, amount: 680000000, 
+      type: 'REMAINING_BALANCE', status: 'SUCCESS', transactionId: 'TXN123456', paymentMethod: 'VNPAY'
+    });
+    console.log('✅ Payments created.');
+
+    // ──────────── 9. NOTIFICATIONS ────────────
+    await Notification.bulkCreate([
+      { userId: customer1.id, type: 'AUCTION_WON', title: 'Chúc mừng!', message: 'Bạn đã thắng đấu giá Garden Townhouse.' },
+      { userId: customer2.id, type: 'BID_OUTBID', title: 'Bị vượt mặt!', message: 'Ai đó đã đặt giá cao hơn bạn tại Modern Sunset Villa.' },
+      { userId: owner1.id, type: 'PROPERTY_APPROVED', title: 'Tài sản được duyệt', message: 'Heritage French Mansion đã sẵn sàng để đấu giá.' },
+    ]);
+    console.log('✅ Notifications created.');
+
+    // ──────────── 10. COMPLAINTS ────────────
+    await Complaint.create({
+      userId: customer3.id, auctionId: auctionCompleted.id, subject: 'Vấn đề bàn giao', 
+      description: 'Tôi thấy có vết nứt nhỏ trên tường phòng khách.', status: 'OPEN', deadline: new Date(now.getTime() + 259200000)
+    });
+    console.log('✅ Complaints created.');
+
+    // ──────────── 11. ACTIVITY LOGS ────────────
+    await ActivityLog.bulkCreate([
+      { userId: admin.id, action: 'ADMIN_LOGIN' },
+      { userId: admin.id, action: 'APPROVED_PROPERTY_' + prop1.id },
+      { userId: customer1.id, action: 'PLACED_BID_ON_' + auctionActive.id },
+    ]);
+    console.log('✅ Activity Logs created.');
+
+    // ──────────── 12. REPORTS ────────────
+    await Report.bulkCreate([
+      { reportType: 'SYSTEM_HEALTH', date: new Date() },
+      { reportType: 'FINANCIAL_SUMMARY', date: new Date() },
+      { reportType: 'AUCTION_PERFORMANCE', date: new Date() }
+    ]);
+    console.log('✅ System Reports created.');
+
+    console.log('\n🎉 Comprehensive seeding completed successfully!');
+    console.log('\nTest Accounts (Password: password123):');
     console.log('  Admin:    admin@auction.com');
     console.log('  Staff:    staff@auction.com');
-    console.log('  Owner 1:  owner@auction.com');
-    console.log('  Owner 2:  lan@auction.com');
+    console.log('  Owner:    owner@auction.com');
     console.log('  Customer: customer@auction.com');
-    console.log('  Customer: duc@auction.com');
-    console.log('  Customer: mai@auction.com');
 
     process.exit(0);
   } catch (error) {
-    console.error('Error seeding data:', error);
+    console.error('❌ Error seeding data:', error);
     process.exit(1);
   }
 };
